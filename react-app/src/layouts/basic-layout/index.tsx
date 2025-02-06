@@ -2,11 +2,7 @@
 import React from "react";
 
 const Test: React.FC = () => {
-  return (
-    <div className="text-xl underline" style={{ color: "red" }}>
-      Hello World
-    </div>
-  );
+  return <div className="text-3xl underline">Hello World</div>;
 };
 
 export default Test;
