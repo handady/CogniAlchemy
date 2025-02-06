@@ -6,6 +6,7 @@ CogniAlchemy 是一个基于 Electron 和 React 的桌面应用，旨在通过�
 
 CogniAlchemy 项目的目录结构如下：
 
+<pre>
 --------------------------------------------------
 CogniAlchemy/
 ├── package.json           // 顶层配置文件，包含全局脚本与依赖（如使用 monorepo 工具时）
@@ -17,6 +18,7 @@ CogniAlchemy/
     ├── public/            // 静态资源目录
     └── src/               // React 源码
 --------------------------------------------------
+</pre>
 
 ## 环境要求
 
@@ -36,8 +38,6 @@ CogniAlchemy/
 3. React 应用目录：  
    进入 react-app 文件夹，运行命令：`npm install`
 
-（注意：如果您希望统一管理依赖，可以考虑使用 Yarn Workspaces、pnpm 或 Lerna 等 monorepo 管理工具。）
-
 ## 开发与运行
 
 ### 开发模式
@@ -46,6 +46,7 @@ CogniAlchemy/
 
 1. 启动 React 开发服务器：  
    进入 react-app 目录，运行命令：`npm start`  
+   或者在根目录运行命令：`npm run start:react`  
    默认 React 应用会运行在 [http://localhost:3000](http://localhost:3000)
 
 2. 启动 Electron 应用：  
