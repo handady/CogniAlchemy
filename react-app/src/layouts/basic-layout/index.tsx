@@ -1,18 +1,18 @@
 // src/layouts/BasicLayout.tsx
 import React from "react";
-import SideBar from "@/components/sidebar";
+import Sidebar from "@/components/sidebar";
+import { Outlet } from "react-router-dom";
 
-interface BasicLayoutProps {
-  children: React.ReactNode;
-}
-
-const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
+const BasicLayout: React.FC = () => {
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* 左侧侧边栏 */}
-      <SideBar />
+      <Sidebar />
+
       {/* 右侧内容区域 */}
-      <main className="flex-1 p-6 bg-gray-50">{children}</main>
+      <main className="flex-1 p-6 overflow-auto bg-gray-50">
+        <Outlet />
+      </main>
     </div>
   );
 };

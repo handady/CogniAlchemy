@@ -1,0 +1,75 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 3555530 */
+  src: url('iconfont.woff2?t=1659077764378') format('woff2'),
+       url('iconfont.woff?t=1659077764378') format('woff'),
+       url('iconfont.ttf?t=1659077764378') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-yingshi:before {
+  content: "\e646";
+}
+
+.icon-shenghuo:before {
+  content: "\e604";
+}
+
+.icon-tubiaozhizuomoban-:before {
+  content: "\e613";
+}
+
+.icon-tubiaozhizuomoban-1:before {
+  content: "\e616";
+}
+
+.icon-youxi:before {
+  content: "\eb5c";
+}
+
+.icon-linggan:before {
+  content: "\e68d";
+}
+
+.icon-daibanshixiang:before {
+  content: "\e6a2";
+}
+
+.icon-zhishi:before {
+  content: "\e685";
+}
+
+.icon-daichuli:before {
+  content: "\e617";
+}
+
+.icon-shenghuo1:before {
+  content: "\e75a";
+}
+
+.icon-yuanzi:before {
+  content: "\e6e7";
+}
+
+.icon-chengbao:before {
+  content: "\e700";
+}
+
+.icon-castle:before {
+  content: "\e631";
+}
+
+.icon-women:before {
+  content: "\ff3e";
+}
+
+.icon-yingshi1:before {
+  content: "\1001f";
+}
+
