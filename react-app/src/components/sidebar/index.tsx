@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Menu } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "@/store/store";
+import { setCollapsed } from "@/store/features/workbenchSlice";
 import LogoBorder from "@/assets/images/logo_border.png";
 import Logo from "@/assets/images/logo.gif";
 import styles from "./index.module.scss";
@@ -8,7 +11,24 @@ import styles from "./index.module.scss";
 const { Sider } = Layout;
 
 const Sidebar: React.FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
+  // 设置redux
+  const dispatch = useDispatch<AppDispatch>();
+  const collapsed = useSelector(
+    (state: RootState) => state.workbench.collapsed
+  );
+
+  // 根据当前路由路径确定激活的菜单项 key
+  const getSelectedKey = () => {
+    const { pathname } = location;
+    if (pathname.startsWith("/cogniAlchemy")) {
+      return "2";
+    } else if (pathname.startsWith("/learning")) {
+      return "3";
+    }
+    // 默认选中首页或其他
+    return "1";
+  };
 
   // 菜单配置
   const menuItems = [
@@ -36,7 +56,7 @@ const Sidebar: React.FC = () => {
           <use xlinkHref="#icon-yingshi1" />
         </svg>
       ),
-      label: <Link to="/movies">测试</Link>,
+      label: <Link to="/cogniAlchemy">cogniAlchemy</Link>,
     },
     {
       key: "3",
@@ -56,19 +76,19 @@ const Sidebar: React.FC = () => {
   // 根据窗口宽度自动控制折叠状态
   useEffect(() => {
     const handleResize = () => {
-      setCollapsed(window.innerWidth < 1360);
+      dispatch(setCollapsed(window.innerWidth < 1360));
     };
     window.addEventListener("resize", handleResize);
     // 初始检测一次
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [dispatch]);
 
   return (
     <Sider
       collapsed={collapsed}
       onCollapse={setCollapsed}
-      width={256}
+      width={220}
       className={styles.sidebar}
     >
       {/* Logo 区域 */}
@@ -91,8 +111,10 @@ const Sidebar: React.FC = () => {
               <img src={Logo} alt="Logo" className={styles.logoImg} />
             </div>
             <div
-              className="font-bold ml-4 mr-6"
-              style={{ display: collapsed ? "none" : "block" }}
+              className="font-bold mx-4"
+              style={{
+                display: collapsed ? "none" : "block",
+              }}
             >
               handady
             </div>
@@ -103,9 +125,9 @@ const Sidebar: React.FC = () => {
       {/* 导航菜单区域 */}
       <Menu
         items={menuItems}
-        theme="dark"
         mode="inline"
-        defaultSelectedKeys={["1"]}
+        defaultSelectedKeys={[getSelectedKey()]}
+        className={styles.customMenu}
         style={{ background: "transparent", border: "none" }}
       />
     </Sider>

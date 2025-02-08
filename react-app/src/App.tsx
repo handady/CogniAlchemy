@@ -8,10 +8,9 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<BasicLayout />}>
-          <Route index element={<div className="pl-50 h-50 bg-red-100">home</div>} />
-          <Route path="movies" element={<div>movies</div>} />
+          <Route index element={<div>home</div>} />
+          <Route path="cogniAlchemy" element={<div>cogniAlchemy</div>} />
           <Route path="learning" element={<div>learning</div>} />
-          {/* 添加其他子路由 */}
         </Route>
       </Routes>
     </Router>

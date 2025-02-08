@@ -1,6 +1,7 @@
 // src/layouts/BasicLayout.tsx
 import React from "react";
 import Sidebar from "@/components/sidebar";
+import styles from "./index.module.scss";
 import { Outlet } from "react-router-dom";
 
 const BasicLayout: React.FC = () => {
@@ -10,7 +11,7 @@ const BasicLayout: React.FC = () => {
       <Sidebar />
 
       {/* 右侧内容区域 */}
-      <main className="flex-1 p-6 overflow-auto bg-gray-50">
+      <main className={`flex-1 overflow-auto ${styles.mainContent}`}>
         <Outlet />
       </main>
     </div>

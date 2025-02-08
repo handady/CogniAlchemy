@@ -1,0 +1,13 @@
+@font-face {
+  font-family: "YunFengHanChanTi";
+  src: url("../assets/font/YunFengHanChanTi.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Muyao-Softbrush";
+  src: url("../assets/font/Muyao-Softbrush.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}

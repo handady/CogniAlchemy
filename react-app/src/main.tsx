@@ -9,17 +9,27 @@ import App from "./App.tsx";
 // react19兼容的antdesign
 import "@ant-design/v5-patch-for-react-19";
 import { ConfigProvider } from "antd";
+// redux以及持久化
+import { Provider } from "react-redux";
+import { store, persistor } from "./store/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#f5347f",
-        },
-      }}
-    >
-      <App />
-    </ConfigProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#f5347f",
+              fontSize: 16,
+              fontFamily: "Muyao-Softbrush",
+            },
+          }}
+        >
+          <App />
+        </ConfigProvider>
+      </PersistGate>
+    </Provider>
   </StrictMode>
 );
