@@ -127,7 +127,7 @@ const Sidebar: React.FC = () => {
         items={menuItems}
         mode="inline"
         defaultSelectedKeys={[getSelectedKey()]}
-        className={styles.customMenu}
+        className={collapsed ? "" : styles.customMenu}
         style={{ background: "transparent", border: "none" }}
       />
     </Sider>

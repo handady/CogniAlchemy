@@ -20,6 +20,12 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   // 自定义中间件
   reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST", "persist/REGISTER"],
+      },
+    }),
 });
 
 export const persistor = persistStore(store);
