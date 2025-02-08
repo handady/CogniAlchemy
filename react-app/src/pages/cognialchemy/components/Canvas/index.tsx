@@ -81,7 +81,6 @@ const Canvas: React.FC = () => {
       .data(nodes)
       .join("circle")
       .attr("r", (d) => radiusScale(d.usage || 1))
-      // 根据 group 使用 d3.schemeCategory10 设置颜色
       .attr("fill", (d) => d.color)
       .call(
         d3
@@ -89,10 +88,61 @@ const Canvas: React.FC = () => {
           .on("start", dragstarted)
           .on("drag", dragged)
           .on("end", dragended)
-      );
+      )
+      .on("mouseover", (event, d) => {
+        // 对所有节点和连线设置过渡动画，使其透明度降低
+        node
+          .transition()
+          .duration(500)
+          .ease(d3.easeCubicOut)
+          .style("opacity", 0.3);
+        link.transition().duration(300).style("opacity", 0.1);
 
-    // 为每个节点添加提示文本
-    node.append("title").text((d) => d.id);
+        // 当前悬浮节点设置为高透明度
+        d3.select(event.currentTarget)
+          .transition()
+          .duration(300)
+          .style("opacity", 1);
+
+        // 将与当前节点相连的连线设置为高透明度
+        link
+          .filter(
+            (l) =>
+              (l.source as NodeDatum).id === d.id ||
+              (l.target as NodeDatum).id === d.id
+          )
+          .transition()
+          .duration(300)
+          .style("opacity", 1);
+
+        // 将与当前节点相连的其他节点设置为高透明度
+        node
+          .filter((n) =>
+            links.some(
+              (l) =>
+                ((l.source as NodeDatum).id === d.id &&
+                  (l.target as NodeDatum).id === n.id) ||
+                ((l.target as NodeDatum).id === d.id &&
+                  (l.source as NodeDatum).id === n.id)
+            )
+          )
+          .transition()
+          .duration(300)
+          .style("opacity", 1);
+      })
+      .on("mouseout", () => {
+        // 鼠标离开时，所有节点和连线恢复原始透明度（也添加动画过渡）
+        node
+          .transition()
+          .duration(500)
+          .ease(d3.easeCubicOut)
+          .style("opacity", 1);
+        link
+          .transition()
+          .duration(500)
+          .ease(d3.easeCubicOut)
+          .style("opacity", 1);
+      });
 
     // simulation 每次 tick 时更新连线和节点的位置
     simulation.on("tick", () => {
