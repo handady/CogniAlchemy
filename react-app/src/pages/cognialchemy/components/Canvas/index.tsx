@@ -119,7 +119,7 @@ const Canvas: React.FC = () => {
     const nodeGroup = zoomContainer
       .append("g")
       .attr("class", "nodes")
-      .selectAll("g")
+      .selectAll<SVGGElement, NodeDatum>("g")
       .data(nodes)
       .join("g")
       // 添加拖拽支持
@@ -130,7 +130,7 @@ const Canvas: React.FC = () => {
           .on("drag", dragged)
           .on("end", dragended)
       )
-      // 鼠标悬浮时显示 pointer
+      // 鼠标悬浮时显示 pointer（这里不设置抓手样式，因为拖拽时由 zoomBehavior 控制）
       .style("cursor", "pointer")
       // 鼠标悬浮与离开时的过渡效果
       .on("mouseover", function (event, d) {
@@ -274,7 +274,19 @@ const Canvas: React.FC = () => {
         } else {
           nodeIdText.style("opacity", 0);
         }
+      })
+      // 方案二：利用 zoom 的 start 与 end 事件改变 cursor 样式
+      .on("start", (event) => {
+        if (event.sourceEvent && event.sourceEvent.type === "mousedown") {
+          svg.style("cursor", "grabbing");
+        }
+      })
+      .on("end", (event) => {
+        if (event.sourceEvent && event.sourceEvent.type === "mouseup") {
+          svg.style("cursor", "default");
+        }
       });
+
     svg.call(zoomBehavior).on("contextmenu", (event) => event.preventDefault());
     // ─────────────────────────────
 
