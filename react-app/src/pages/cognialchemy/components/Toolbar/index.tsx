@@ -12,13 +12,13 @@ interface ToolbarProps {
 const Toolbar: React.FC<ToolbarProps> = ({ onAdd, onReset }) => {
   return (
     <div
-      className={`${styles.Toolbar} absolute top-2 right-3 flex flex-col gap-1 p-1`}
+      className={`${styles.Toolbar} absolute top-3 right-3 flex flex-col gap-1 p-1`}
     >
       <Tooltip
         title="新增节点"
-        placement="bottomRight"
-        classNames={{ root: "custom-tooltip" }}
+        placement="left"
         color="var(--primary-color)"
+        getPopupContainer={(trigger) => trigger.parentElement as HTMLElement}
       >
         <button
           onClick={onAdd}
@@ -29,9 +29,9 @@ const Toolbar: React.FC<ToolbarProps> = ({ onAdd, onReset }) => {
       </Tooltip>
       <Tooltip
         title="重置画布"
-        placement="bottomRight"
-        classNames={{ root: "custom-tooltip" }}
+        placement="left"
         color="var(--primary-color)"
+        getPopupContainer={(trigger) => trigger.parentElement as HTMLElement}
       >
         <button
           onClick={onReset}

@@ -12,7 +12,7 @@
     }
   }
 
-  .custom-tooltip {
+  :global(.ant-tooltip) {
     user-select: none;
   }
 }
