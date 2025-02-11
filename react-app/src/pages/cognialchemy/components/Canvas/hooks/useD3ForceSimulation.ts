@@ -207,7 +207,7 @@ export const useD3ForceSimulation = ({
         // 根据当前缩放比例决定是否显示 id 文本
         const currentTransform = d3.zoomTransform(svg.node() as SVGSVGElement);
         const scaleThreshold = 2;
-        const scaleThresholdHalf = 1.5;
+        const scaleThresholdHalf = 1.35;
         if (currentTransform.k <= scaleThresholdHalf) {
           nodeIdText
             .transition()
@@ -300,7 +300,7 @@ export const useD3ForceSimulation = ({
           zoomContainer.attr("transform", event.transform);
         }
         // 根据缩放级别控制节点 id 文本的显示
-        const scaleThresholdHalf = 1.5;
+        const scaleThresholdHalf = 1.35;
         const scaleThreshold = 2;
         if (event.transform.k > scaleThreshold) {
           nodeIdText
