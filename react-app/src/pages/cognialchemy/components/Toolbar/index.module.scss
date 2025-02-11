@@ -1,0 +1,18 @@
+@use "@/styles/variables.scss" as *;
+
+.Toolbar {
+  background-color: rgba($color: $primary-color, $alpha: 0.2);
+  border-radius: 4px;
+
+  .iconBtn {
+    background-color: transparent;
+    border-radius: 4px;
+    &:hover {
+      background-color: rgba($color: $primary-color, $alpha: 0.3);
+    }
+  }
+
+  .custom-tooltip {
+    user-select: none;
+  }
+}

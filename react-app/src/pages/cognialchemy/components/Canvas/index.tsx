@@ -2,6 +2,8 @@
 import React, { useEffect, useRef } from "react";
 import bubbleData from "../../bubble.json";
 import { radiusScale, fontSizeScale } from "../../utils/forceSimulation";
+import Toolbar from "../Toolbar";
+import debounce from "lodash/debounce";
 import * as d3 from "d3";
 
 // 定义节点和连线的数据类型
@@ -24,6 +26,16 @@ interface LinkDatum {
 
 const Canvas: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // 新增节点处理函数（待实现具体逻辑）
+  const handleAddNode = () => {
+    console.log("新增节点");
+  };
+
+  // 重置画布处理函数（待实现具体逻辑）
+  const handleResetCanvas = () => {
+    console.log("重置画布");
+  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -341,17 +353,21 @@ const Canvas: React.FC = () => {
     }
 
     // 监听容器尺寸变化，动态更新 SVG 的尺寸和 viewBox
+    const updateSVG = debounce((entry: any) => {
+      const width = entry.contentRect.width;
+      const height = entry.contentRect.height;
+      svg
+        .attr("width", width)
+        .attr("height", height)
+        .attr("viewBox", `${-width / 2} ${-height / 2} ${width} ${height}`);
+      simulation.force("center", d3.forceCenter(0, 0));
+      simulation.alpha(1).restart();
+    }, 100);
+
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
         if (entry.target === container) {
-          width = entry.contentRect.width;
-          height = entry.contentRect.height;
-          svg
-            .attr("width", width)
-            .attr("height", height)
-            .attr("viewBox", `${-width / 2} ${-height / 2} ${width} ${height}`);
-          simulation.force("center", d3.forceCenter(0, 0));
-          simulation.alpha(1).restart();
+          updateSVG(entry);
         }
       }
     });
@@ -366,7 +382,14 @@ const Canvas: React.FC = () => {
   }, []);
 
   // 父容器需要有明确的尺寸
-  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100%", position: "relative" }}
+    >
+      <Toolbar onAdd={handleAddNode} onReset={handleResetCanvas} />
+    </div>
+  );
 };
 
 export default Canvas;
