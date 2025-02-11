@@ -1,5 +1,5 @@
 // src/hooks/useD3ForceSimulation.ts
-import { useEffect } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import * as d3 from "d3";
 import debounce from "lodash/debounce";
 import bubbleData from "../../../bubble.json";
@@ -34,6 +34,18 @@ interface UseD3ForceSimulationParams {
 export const useD3ForceSimulation = ({
   containerRef,
 }: UseD3ForceSimulationParams) => {
+  // 定义外部的 ref 对象，用于保存 SVG 和 zoomBehavior 引用
+  const svgRef = useRef<d3.Selection<
+    SVGSVGElement,
+    unknown,
+    null,
+    undefined
+  > | null>(null);
+  const zoomBehaviorRef = useRef<d3.ZoomBehavior<
+    SVGSVGElement,
+    unknown
+  > | null>(null);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -50,6 +62,8 @@ export const useD3ForceSimulation = ({
       .attr("height", height)
       .attr("viewBox", `${-width / 2} ${-height / 2} ${width} ${height}`)
       .attr("style", "max-width: 100%; height: auto;");
+    // 将创建的 svg 保存到外部 ref 中
+    svgRef.current = svg;
 
     // 所有图形放入 zoomContainer 中，便于统一缩放和平移
     const zoomContainer = svg.append("g").attr("class", "zoom-container");
@@ -103,7 +117,7 @@ export const useD3ForceSimulation = ({
         "collision",
         d3
           .forceCollide<NodeDatum>()
-          .radius((d) => radiusScale(d.usage || 1) + 5) // 5 为额外边距，可调
+          .radius((d) => radiusScale(d.usage || 1) + 5)
           .iterations(2)
       );
 
@@ -125,7 +139,6 @@ export const useD3ForceSimulation = ({
       .selectAll<SVGGElement, NodeDatum>("g")
       .data(nodes)
       .join("g")
-      // 使用工具模块中的拖拽处理函数
       .call(
         d3
           .drag<SVGGElement, NodeDatum>()
@@ -135,7 +148,6 @@ export const useD3ForceSimulation = ({
       )
       .style("cursor", "pointer")
       .on("mouseover", function (event, d) {
-        // 先将所有节点和连线淡出
         nodeGroup
           .transition()
           .duration(400)
@@ -147,7 +159,6 @@ export const useD3ForceSimulation = ({
           .ease(d3.easeCubicOut)
           .style("opacity", 0.1);
 
-        // 计算与当前节点相连的所有节点 id（包括自身）
         const connectedIds = new Set<string>();
         connectedIds.add(d.id);
         links.forEach((l) => {
@@ -162,7 +173,6 @@ export const useD3ForceSimulation = ({
           }
         });
 
-        // 高亮当前节点及其相连的节点
         nodeGroup
           .filter((nodeData) => connectedIds.has(nodeData.id))
           .transition()
@@ -170,7 +180,6 @@ export const useD3ForceSimulation = ({
           .ease(d3.easeCubicOut)
           .style("opacity", 1);
 
-        // 高亮与当前节点相连的连线
         link
           .filter((l) => {
             const sourceId =
@@ -184,7 +193,6 @@ export const useD3ForceSimulation = ({
           .ease(d3.easeCubicOut)
           .style("opacity", 1);
 
-        // 修改 id 文本：只显示当前节点及其相连节点的 id，其他隐藏
         nodeIdText
           .transition()
           .duration(300)
@@ -192,7 +200,6 @@ export const useD3ForceSimulation = ({
           .style("opacity", (nd) => (connectedIds.has(nd.id) ? 1 : 0));
       })
       .on("mouseout", function () {
-        // 恢复所有节点和连线的透明度
         nodeGroup
           .transition()
           .duration(400)
@@ -204,10 +211,9 @@ export const useD3ForceSimulation = ({
           .ease(d3.easeCubicOut)
           .style("opacity", 1);
 
-        // 根据当前缩放比例决定是否显示 id 文本
         const currentTransform = d3.zoomTransform(svg.node() as SVGSVGElement);
-        const scaleThreshold = 2;
         const scaleThresholdHalf = 1.35;
+        const scaleThreshold = 2;
         if (currentTransform.k <= scaleThresholdHalf) {
           nodeIdText
             .transition()
@@ -335,7 +341,10 @@ export const useD3ForceSimulation = ({
 
     svg.call(zoomBehavior).on("contextmenu", (event) => event.preventDefault());
 
-    // 6. 封装 ResizeObserver 逻辑，使用 lodash 的 debounce 降低触发频率
+    // 将 zoomBehavior 保存到外部 ref 中
+    zoomBehaviorRef.current = zoomBehavior;
+
+    // 6. ResizeObserver 逻辑
     const updateSVG = debounce((entry: ResizeObserverEntry) => {
       const { width, height } = entry.contentRect;
       svg
@@ -362,4 +371,16 @@ export const useD3ForceSimulation = ({
       resizeObserver.unobserve(container);
     };
   }, [containerRef]);
+
+  // 7. 提供给外部的方法：重置画布
+  const resetCanvas = useCallback(() => {
+    if (svgRef.current && zoomBehaviorRef.current) {
+      svgRef.current
+        .transition()
+        .duration(300)
+        .call(zoomBehaviorRef.current.transform, d3.zoomIdentity);
+    }
+  }, []);
+
+  return { resetCanvas };
 };
