@@ -6,7 +6,7 @@ import { Outlet } from "react-router-dom";
 
 const BasicLayout: React.FC = () => {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-full overflow-hidden">
       {/* 左侧侧边栏 */}
       <Sidebar />
 

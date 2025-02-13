@@ -9,17 +9,12 @@ const Canvas: React.FC = () => {
     containerRef: containerRef as React.RefObject<HTMLElement>,
   });
 
-  // 新增节点处理函数（具体逻辑自行补充）
-  const handleAddNode = () => {
-    console.log("新增节点");
-  };
-
   return (
     <div
       ref={containerRef}
       style={{ width: "100%", height: "100%", position: "relative" }}
     >
-      <Toolbar onAdd={handleAddNode} onReset={resetCanvas} />
+      <Toolbar onReset={resetCanvas} />
     </div>
   );
 };

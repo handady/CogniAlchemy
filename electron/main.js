@@ -1,25 +1,33 @@
+// electron/main.js
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1440,
+    height: 900,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   });
 
-  // 开发时加载 React 开发服务器地址，打包时加载打包后的文件
   const startUrl =
     process.env.ELECTRON_START_URL ||
     `file://${path.join(__dirname, "../react-app/build/index.html")}`;
   win.loadURL(startUrl);
+
+  // 打开开发者工具
+  win.webContents.openDevTools();
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+
+  // 引入 IPC 处理程序模块
+  require("./ipc-handlers/graphHandlers");
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
