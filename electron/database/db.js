@@ -1,12 +1,15 @@
-// src/database/db.ts
-const Database = require("better-sqlite3");
+const fs = require("fs");
 const path = require("path");
-const { app } = require("electron");
+const Database = require("better-sqlite3");
 
-// 获取数据库存放路径（建议放在用户数据目录下）
-const dbPath = path.join(app.getPath("userData"), "knowledge.db");
+// 创建 data 目录，如果不存在的话
+const dataDir = path.join(__dirname, "data");
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
 
-// 打开或创建数据库文件
+// 数据库文件放在当前目录下的 data 文件夹内
+const dbPath = path.join(dataDir, "knowledge.db");
 const db = new Database(dbPath);
 
 // 1. 创建 GraphNodes 表

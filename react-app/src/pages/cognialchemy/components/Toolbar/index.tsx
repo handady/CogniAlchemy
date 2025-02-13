@@ -7,9 +7,10 @@ import { PlusCircleOutlined, ReloadOutlined } from "@ant-design/icons";
 
 interface ToolbarProps {
   onReset?: () => void;
+  onRefresh?: () => void; // 新增一个刷新数据的回调
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({ onReset }) => {
+const Toolbar: React.FC<ToolbarProps> = ({ onReset, onRefresh }) => {
   // 新增节点方法
   const onAdd = async () => {
     // 构造新节点数据（根据你的数据结构）
@@ -26,11 +27,11 @@ const Toolbar: React.FC<ToolbarProps> = ({ onReset }) => {
 
     try {
       // 通过 IPC 调用主进程接口新增节点
-      // 这里假设你在 preload.js 中暴露了 electronAPI.createGraphNode
       const result = await window.electronAPI.createGraphNode(newNode);
       if (result.success) {
         console.log("Node added successfully");
-        // 此处可以通知画布刷新或更新 UI
+        // 新增节点成功后，调用 onRefresh 刷新数据
+        onRefresh && onRefresh();
       } else {
         console.error("Failed to add node:", result.message);
       }
