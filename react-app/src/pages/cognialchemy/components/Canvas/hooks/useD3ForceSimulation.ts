@@ -148,7 +148,7 @@ export const useD3ForceSimulation = ({
     const link = zoomContainer
       .append("g")
       .attr("class", "links")
-      .attr("stroke", "#999")
+      .attr("stroke", "var(--line-color)")
       .attr("stroke-opacity", 0.6)
       .selectAll("line")
       .data(links)

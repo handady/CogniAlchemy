@@ -151,9 +151,19 @@ const Canvas: React.FC = () => {
       }
     };
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        connectionSourceRef.current = null;
+        setTempLine(null);
+        setConnectionSourceEvent(null);
+      }
+    };
+
     container.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
       container.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [connectionSourceRef.current]);
 
@@ -202,7 +212,7 @@ const Canvas: React.FC = () => {
             y1={tempLine.y1}
             x2={tempLine.x2}
             y2={tempLine.y2}
-            stroke="red"
+            stroke="var(--temp-line-color)"
             strokeWidth={2}
           />
         </svg>

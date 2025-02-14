@@ -10,12 +10,12 @@ $btn-close-hover: #00bfff;
 $btn-connect: #83cbac;
 $btn-connect-hover: #229453;
 
+// 连接线颜色
+$temp-line-color: #cf4813;
+$line-color: #685e48;
+
 :root {
   --primary-color: #{$primary-color};
-  --btn-submit: #{$btn-submit};
-  --btn-submit-hover: #{$btn-submit-hover};
-  --btn-reset: #{$btn-reset};
-  --btn-reset-hover: #{$btn-reset-hover};
-  --btn-close: #{$btn-close};
-  --btn-close-hover: #{$btn-close-hover};
+  --temp-line-color: #{$temp-line-color};
+  --line-color: #{$line-color};
 }
