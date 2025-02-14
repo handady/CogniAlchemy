@@ -31,6 +31,7 @@ export interface UseD3ForceSimulationParams {
   containerRef: React.RefObject<HTMLElement>;
   data: GraphData | null;
   onNodeContextMenu?: (event: MouseEvent, node: NodeDatum) => void;
+  onNodeClick?: (event: MouseEvent, node: NodeDatum) => void;
 }
 
 /**
@@ -41,6 +42,7 @@ export const useD3ForceSimulation = ({
   containerRef,
   data,
   onNodeContextMenu,
+  onNodeClick,
 }: UseD3ForceSimulationParams) => {
   const svgRef = useRef<d3.Selection<
     SVGSVGElement,
@@ -72,7 +74,13 @@ export const useD3ForceSimulation = ({
     let cancelled = false;
 
     // 从 props 中获取数据
-    const { nodes, links } = data;
+    // const { nodes, links } = data;
+    const nodes: NodeDatum[] = data.nodes;
+    const links: LinkDatum[] = data.links.map((edge: any) => ({
+      source: edge.source_node_id,
+      target: edge.target_node_id,
+      value: edge.weight,
+    }));
 
     // 初始宽高
     let width = container.clientWidth;
@@ -149,7 +157,7 @@ export const useD3ForceSimulation = ({
       .selectAll("line")
       .data(links)
       .join("line")
-      .attr("stroke-width", (d) => Math.sqrt(d.value));
+      .attr("stroke-width", (d) => Math.sqrt(d.value || 0.5));
 
     // 4. 创建节点分组，并添加拖拽和事件处理
     const nodeGroup = zoomContainer
@@ -254,7 +262,7 @@ export const useD3ForceSimulation = ({
         }
       })
       .on("click", (event, d) => {
-        console.log("Clicked node:", d.id);
+        onNodeClick && onNodeClick(event, d);
       })
       .on("contextmenu", (event, d) => {
         event.preventDefault();

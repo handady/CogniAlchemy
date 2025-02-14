@@ -51,13 +51,13 @@ const getGraphData = () => {
   const nodesStmt = db.prepare("SELECT * FROM GraphNodes");
   const nodes = nodesStmt.all().map((node) => ({
     ...node,
-    state: JSON.parse(node.state || "{}")
+    state: JSON.parse(node.state || "{}"),
   }));
-  
+
   // 查询所有边
   const edgesStmt = db.prepare("SELECT * FROM Edges");
   const edges = edgesStmt.all();
-  
+
   return { nodes, edges };
 };
 
@@ -74,6 +74,15 @@ const deleteNode = (nodeId) => {
   edgesStmt.run({ id: nodeId });
 };
 
+// 根据nodeid连接两个节点
+const connectNodes = (sourceNodeId, targetNodeId) => {
+  const stmt = db.prepare(`
+    INSERT INTO Edges (source_node_id, target_node_id)
+    VALUES (@sourceNodeId, @targetNodeId)
+  `);
+  stmt.run({ sourceNodeId, targetNodeId });
+};
+
 module.exports = {
   createGraphNode,
   updateGraphNodeState,
@@ -81,4 +90,5 @@ module.exports = {
   createInternalCanvasState,
   getGraphData,
   deleteNode,
+  connectNodes,
 };

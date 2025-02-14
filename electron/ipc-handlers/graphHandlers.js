@@ -46,3 +46,17 @@ ipcMain.handle("delete-node", async (event, nodeId) => {
     return { success: false, message: error.message };
   }
 });
+
+// 根据nodeid连接两个节点
+ipcMain.handle(
+  "connect-nodes",
+  async (event, { sourceNodeId, targetNodeId }) => {
+    try {
+      dbOps.connectNodes(sourceNodeId, targetNodeId);
+      return { success: true };
+    } catch (error) {
+      console.error("connectNodes error:", error);
+      return { success: false, message: error.message };
+    }
+  }
+);

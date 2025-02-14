@@ -9,6 +9,7 @@ export interface NodePannelProps {
   node: NodeDatum | null;
   onRefresh: () => void;
   onClose: () => void;
+  onConnect: (node: NodeDatum) => void;
 }
 
 const NodePannel: React.FC<NodePannelProps> = ({
@@ -17,6 +18,7 @@ const NodePannel: React.FC<NodePannelProps> = ({
   node,
   onRefresh,
   onClose,
+  onConnect,
 }) => {
   const onDeleteNode = async () => {
     if (node && node.id) {
@@ -55,7 +57,9 @@ const NodePannel: React.FC<NodePannelProps> = ({
       <button
         className={`${styles.btn} ${styles.connect}`}
         onClick={() => {
-          //   onRefresh();
+          if (node) {
+            onConnect(node);
+          }
           onClose();
         }}
       >

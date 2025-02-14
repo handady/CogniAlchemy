@@ -9,6 +9,7 @@ declare global {
       createInternalCanvas: (internalData: any) => Promise<any>;
       getGraphData: () => Promise<any>;
       deleteNode: (id: string) => Promise<any>;
+      connectNodes: (sourceId: string, targetId: string) => Promise<any>;
     };
   }
 }
