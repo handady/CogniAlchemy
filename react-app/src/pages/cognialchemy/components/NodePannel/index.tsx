@@ -18,6 +18,19 @@ const NodePannel: React.FC<NodePannelProps> = ({
   onRefresh,
   onClose,
 }) => {
+  const onDeleteNode = async () => {
+    if (node && node.id) {
+      const result = await window.electronAPI.deleteNode(node.id);
+      if (result.success) {
+        console.log("Node deleted successfully");
+        onRefresh();
+        onClose();
+      } else {
+        console.error("Failed to delete node:", result.message);
+      }
+    }
+  };
+
   return (
     <div
       style={{
@@ -60,8 +73,7 @@ const NodePannel: React.FC<NodePannelProps> = ({
       <button
         className={`${styles.btn} ${styles.delete}`}
         onClick={() => {
-          //   onRefresh();
-          onClose();
+          onDeleteNode();
         }}
       >
         删除

@@ -8,6 +8,7 @@ declare global {
       createEdge: (edgeData: any) => Promise<any>;
       createInternalCanvas: (internalData: any) => Promise<any>;
       getGraphData: () => Promise<any>;
+      deleteNode: (id: string) => Promise<any>;
     };
   }
 }

@@ -35,3 +35,14 @@ ipcMain.handle("get-graph-data", async () => {
     return { success: false, message: error.message };
   }
 });
+
+// 删除node节点以及相关的边
+ipcMain.handle("delete-node", async (event, nodeId) => {
+  try {
+    dbOps.deleteNode(nodeId);
+    return { success: true };
+  } catch (error) {
+    console.error("deleteNode error:", error);
+    return { success: false, message: error.message };
+  }
+});

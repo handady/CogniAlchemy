@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   createInternalCanvas: (internalData) =>
     ipcRenderer.invoke("create-internal-canvas", internalData),
   getGraphData: () => ipcRenderer.invoke("get-graph-data"),
+  deleteNode: (nodeId) => ipcRenderer.invoke("delete-node", nodeId),
 });
 
 window.addEventListener("DOMContentLoaded", () => {

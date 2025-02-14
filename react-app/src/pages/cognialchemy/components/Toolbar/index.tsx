@@ -4,6 +4,7 @@ import styles from "./index.module.scss";
 import { v4 as uuidv4 } from "uuid";
 import { Tooltip } from "antd";
 import { PlusCircleOutlined, ReloadOutlined } from "@ant-design/icons";
+import dayjs from 'dayjs'
 
 interface ToolbarProps {
   onReset?: () => void;
@@ -16,7 +17,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ onReset, onRefresh }) => {
     // 构造新节点数据（根据你的数据结构）
     const newNode = {
       id: uuidv4(), // 生成唯一 ID
-      tag: "New Node",
+      tag: dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'), // 节点标签
       content: "This is a new node.", // 节点内容，可为 Markdown 文本
       color: "#f5347f",
       usage: 1,

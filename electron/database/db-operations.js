@@ -61,7 +61,18 @@ const getGraphData = () => {
   return { nodes, edges };
 };
 
-// 其它操作可以继续在此处扩展…
+// 删除node节点以及相关的边
+const deleteNode = (nodeId) => {
+  const stmt = db.prepare(`
+    DELETE FROM GraphNodes WHERE id = @id
+  `);
+  stmt.run({ id: nodeId });
+
+  const edgesStmt = db.prepare(`
+    DELETE FROM Edges WHERE source_node_id = @id OR target_node_id = @id
+  `);
+  edgesStmt.run({ id: nodeId });
+};
 
 module.exports = {
   createGraphNode,
@@ -69,4 +80,5 @@ module.exports = {
   createEdge,
   createInternalCanvasState,
   getGraphData,
+  deleteNode,
 };
