@@ -1,37 +1,34 @@
 // Toolbar.tsx
-import React from "react";
+import React, { useState } from "react";
 import styles from "./index.module.scss";
-import { v4 as uuidv4 } from "uuid";
 import { Tooltip } from "antd";
 import { PlusCircleOutlined, ReloadOutlined } from "@ant-design/icons";
-import dayjs from 'dayjs'
+import NewNodeDialog, { NewNode } from "../NewNodeDialog"; // 根据实际路径引入
 
 interface ToolbarProps {
   onReset?: () => void;
-  onRefresh?: () => void; // 新增一个刷新数据的回调
+  onRefresh?: () => void; // 刷新数据回调
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({ onReset, onRefresh }) => {
-  // 新增节点方法
-  const onAdd = async () => {
-    // 构造新节点数据（根据你的数据结构）
-    const newNode = {
-      id: uuidv4(), // 生成唯一 ID
-      tag: dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'), // 节点标签
-      content: "This is a new node.", // 节点内容，可为 Markdown 文本
-      color: "#f5347f",
-      usage: 1,
-      pos_x: 0, // 初始坐标，可根据需要调整
-      pos_y: 0,
-      state: {}, // 可以存储额外状态信息（以 JSON 对象保存）
-    };
+  const [dialogVisible, setDialogVisible] = useState(false);
 
+  // 打开新增节点 Dialog
+  const handleOpenDialog = () => {
+    setDialogVisible(true);
+  };
+
+  // 关闭 Dialog
+  const handleCloseDialog = () => {
+    setDialogVisible(false);
+  };
+
+  // 点击确认后调用新增节点接口
+  const handleConfirmDialog = async (newNode: NewNode) => {
     try {
-      // 通过 IPC 调用主进程接口新增节点
       const result = await window.electronAPI.createGraphNode(newNode);
       if (result.success) {
         console.log("Node added successfully");
-        // 新增节点成功后，调用 onRefresh 刷新数据
         onRefresh && onRefresh();
       } else {
         console.error("Failed to add node:", result.message);
@@ -39,39 +36,49 @@ const Toolbar: React.FC<ToolbarProps> = ({ onReset, onRefresh }) => {
     } catch (error: any) {
       console.error("Error adding node:", error);
     }
+    setDialogVisible(false);
   };
 
   return (
-    <div
-      className={`${styles.Toolbar} absolute top-3 right-3 flex flex-col gap-1 p-1`}
-    >
-      <Tooltip
-        title="新增节点"
-        placement="left"
-        color="var(--primary-color)"
-        getPopupContainer={(trigger) => trigger.parentElement as HTMLElement}
+    <>
+      <div
+        className={`${styles.Toolbar} absolute top-3 right-3 flex flex-col gap-1 p-1`}
       >
-        <button
-          onClick={onAdd}
-          className={`${styles.iconBtn} border-0 cursor-pointer text-xl transition-all duration-300 py-0.5 px-1.5`}
+        <Tooltip
+          title="新增节点"
+          placement="left"
+          color="var(--primary-color)"
+          getPopupContainer={(trigger) => trigger.parentElement as HTMLElement}
         >
-          <PlusCircleOutlined />
-        </button>
-      </Tooltip>
-      <Tooltip
-        title="重置画布"
-        placement="left"
-        color="var(--primary-color)"
-        getPopupContainer={(trigger) => trigger.parentElement as HTMLElement}
-      >
-        <button
-          onClick={onReset}
-          className={`${styles.iconBtn} border-0 cursor-pointer text-xl transition-all duration-300 py-0.5 px-1.5`}
+          <button
+            onClick={handleOpenDialog}
+            className={`${styles.iconBtn} border-0 cursor-pointer text-xl transition-all duration-300 py-0.5 px-1.5`}
+          >
+            <PlusCircleOutlined />
+          </button>
+        </Tooltip>
+        <Tooltip
+          title="重置画布"
+          placement="left"
+          color="var(--primary-color)"
+          getPopupContainer={(trigger) => trigger.parentElement as HTMLElement}
         >
-          <ReloadOutlined />
-        </button>
-      </Tooltip>
-    </div>
+          <button
+            onClick={onReset}
+            className={`${styles.iconBtn} border-0 cursor-pointer text-xl transition-all duration-300 py-0.5 px-1.5`}
+          >
+            <ReloadOutlined />
+          </button>
+        </Tooltip>
+      </div>
+
+      {/* 渲染新增节点 Dialog */}
+      <NewNodeDialog
+        visible={dialogVisible}
+        onCancel={handleCloseDialog}
+        onConfirm={handleConfirmDialog}
+      />
+    </>
   );
 };
 

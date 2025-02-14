@@ -66,5 +66,18 @@ db.prepare(
 `
 ).run();
 
+// 新建 Tags 表，用于存储所有标签选项
+db.prepare(
+  `
+  CREATE TABLE IF NOT EXISTS Tags (
+    id TEXT PRIMARY KEY,
+    label TEXT NOT NULL,
+    color TEXT DEFAULT '#f5347f', -- 如果需要可以存储每个标签对应的默认颜色
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+`
+).run();
+
 // 导出数据库实例和一些简单的操作函数
 module.exports = db;

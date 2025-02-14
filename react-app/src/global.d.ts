@@ -10,6 +10,10 @@ declare global {
       getGraphData: () => Promise<any>;
       deleteNode: (id: string) => Promise<any>;
       connectNodes: (sourceId: string, targetId: string) => Promise<any>;
+      getTags: () => Promise<any>;
+      createTag: (tagData: any) => Promise<any>;
+      updateTag: (tagId: string, tagData: any) => Promise<any>;
+      deleteTag: (tagId: string) => Promise<any>;
     };
   }
 }

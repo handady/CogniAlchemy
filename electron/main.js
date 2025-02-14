@@ -27,6 +27,7 @@ app.whenReady().then(() => {
 
   // 引入 IPC 处理程序模块
   require("./ipc-handlers/graphHandlers");
+  require("./ipc-handlers/tagHandlers");
 });
 
 app.on("window-all-closed", () => {

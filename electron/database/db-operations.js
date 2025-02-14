@@ -8,8 +8,11 @@ const createGraphNode = (node) => {
   `);
   stmt.run({
     ...node,
+    // 将 tag 数组序列化存储，color 直接存储
+    tag: JSON.stringify(node.tag),
+    color: node.color,
     state: JSON.stringify(node.state),
-    created_by: node.created_by || "system", // 如果没提供，可以设定默认值
+    created_by: node.created_by || "system",
     updated_by: node.updated_by || "system",
   });
 };
@@ -57,6 +60,8 @@ const getGraphData = () => {
   const nodesStmt = db.prepare("SELECT * FROM GraphNodes");
   const nodes = nodesStmt.all().map((node) => ({
     ...node,
+    // 将 tag 从 JSON 字符串转换为数组，若为空则返回空数组
+    tag: JSON.parse(node.tag || "[]"),
     state: JSON.parse(node.state || "{}"),
   }));
 
