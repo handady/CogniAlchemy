@@ -1,0 +1,42 @@
+@use "@/styles/variables.scss" as *;
+
+.nodePannel {
+  background-color: rgba($primary-color, 0.5);
+  display: flex;
+  flex-direction: column;
+  border-radius: 4px;
+
+  .btn {
+    cursor: pointer;
+    padding: 2px 10px;
+    border-radius: 4px;
+  }
+
+  .edit {
+    background-color: rgba($btn-close, 1);
+    &:hover {
+      background-color: rgba($btn-close-hover, 1);
+    }
+  }
+
+  .delete {
+    background-color: rgba($btn-submit, 1);
+    &:hover {
+      background-color: rgba($btn-submit-hover, 0.8);
+    }
+  }
+
+  .disconnect {
+    background-color: rgba($btn-reset, 1);
+    &:hover {
+      background-color: rgba($btn-reset-hover, 0.8);
+    }
+  }
+
+  .connect {
+    background-color: rgba($btn-connect, 1);
+    &:hover {
+      background-color: rgba($btn-connect-hover, 1);
+    }
+  }
+}

@@ -11,7 +11,7 @@ const BasicLayout: React.FC = () => {
       <Sidebar />
 
       {/* 右侧内容区域 */}
-      <main className={`flex-1 overflow-auto ${styles.mainContent}`}>
+      <main className={`flex-1 overflow-hidden ${styles.mainContent}`}>
         <Outlet />
       </main>
     </div>

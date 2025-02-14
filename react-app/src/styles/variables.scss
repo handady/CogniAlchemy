@@ -1,5 +1,21 @@
-$primary-color: #f5347f;
+$primary-color: #f5347f; // 主色
+
+// 提交、重置、关闭按钮
+$btn-submit: #fec2d6;
+$btn-submit-hover: #f5347f;
+$btn-reset: #fffacd;
+$btn-reset-hover: #ffd700;
+$btn-close: #bfefff;
+$btn-close-hover: #00bfff;
+$btn-connect: #83cbac;
+$btn-connect-hover: #229453;
 
 :root {
   --primary-color: #{$primary-color};
+  --btn-submit: #{$btn-submit};
+  --btn-submit-hover: #{$btn-submit-hover};
+  --btn-reset: #{$btn-reset};
+  --btn-reset-hover: #{$btn-reset-hover};
+  --btn-close: #{$btn-close};
+  --btn-close-hover: #{$btn-close-hover};
 }

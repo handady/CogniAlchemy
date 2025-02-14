@@ -30,6 +30,7 @@ export interface GraphData {
 export interface UseD3ForceSimulationParams {
   containerRef: React.RefObject<HTMLElement>;
   data: GraphData | null;
+  onNodeContextMenu?: (event: MouseEvent, node: NodeDatum) => void;
 }
 
 /**
@@ -39,6 +40,7 @@ export interface UseD3ForceSimulationParams {
 export const useD3ForceSimulation = ({
   containerRef,
   data,
+  onNodeContextMenu,
 }: UseD3ForceSimulationParams) => {
   const svgRef = useRef<d3.Selection<
     SVGSVGElement,
@@ -253,6 +255,10 @@ export const useD3ForceSimulation = ({
       })
       .on("click", (event, d) => {
         console.log("Clicked node:", d.id);
+      })
+      .on("contextmenu", (event, d) => {
+        event.preventDefault();
+        onNodeContextMenu && onNodeContextMenu(event, d);
       });
 
     // 节点中的圆形和 tag
