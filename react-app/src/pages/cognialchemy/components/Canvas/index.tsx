@@ -44,11 +44,16 @@ const Canvas: React.FC = () => {
   // 加载数据
   const fetchGraphData = useCallback(async () => {
     const res = await window.electronAPI.getGraphData();
+    console.log("获取图数据：", res.data);
     if (res.success) {
       const { nodes: dbNodes, edges: dbEdges } = res.data;
       setGraphData({
         nodes: dbNodes,
-        links: dbEdges,
+        links: dbEdges.map((edge: any) => ({
+          source: edge.source_node_id,
+          target: edge.target_node_id,
+          value: edge.weight,
+        })),
       });
     } else {
       console.error("Failed to get graph data:", res.message);

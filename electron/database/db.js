@@ -12,7 +12,7 @@ if (!fs.existsSync(dataDir)) {
 const dbPath = path.join(dataDir, "knowledge.db");
 const db = new Database(dbPath);
 
-// 1. 创建 GraphNodes 表
+// 1. 创建 GraphNodes 表，新增 created_by 和 updated_by 字段
 db.prepare(
   `
   CREATE TABLE IF NOT EXISTS GraphNodes (
@@ -25,12 +25,14 @@ db.prepare(
     pos_y REAL,           -- 节点在主画布上的 y 坐标（可选）
     state TEXT,           -- 以 JSON 格式保存的节点状态信息（如显示设置、折叠状态等）
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_by TEXT,      -- 创建人
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_by TEXT       -- 最近操作人
   );
 `
 ).run();
 
-// 2. 创建 Edges 表
+// 2. 创建 Edges 表，新增 created_by 和 updated_by 字段
 db.prepare(
   `
   CREATE TABLE IF NOT EXISTS Edges (
@@ -39,14 +41,16 @@ db.prepare(
     target_node_id TEXT,
     weight REAL,          -- 边的权重或强度
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT,      -- 创建人
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_by TEXT,      -- 最近操作人
     FOREIGN KEY (source_node_id) REFERENCES GraphNodes(id),
     FOREIGN KEY (target_node_id) REFERENCES GraphNodes(id)
   );
 `
 ).run();
 
-// 3. 创建 InternalCanvasState 表
+// 3. 创建 InternalCanvasState 表，新增 created_by 和 updated_by 字段
 db.prepare(
   `
   CREATE TABLE IF NOT EXISTS InternalCanvasState (
@@ -54,7 +58,9 @@ db.prepare(
     parent_node_id TEXT,           -- 对应 GraphNodes 中的节点ID，表示此内部画布属于哪个主节点
     react_flow_state TEXT,         -- 保存 React Flow 状态的 JSON 字符串（包括 nodes、edges、viewport 等）
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT,               -- 创建人
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_by TEXT,               -- 最近操作人
     FOREIGN KEY (parent_node_id) REFERENCES GraphNodes(id)
   );
 `

@@ -1,47 +1,53 @@
-// electron/database/db-operations.js
-const db = require("./db"); // 引入数据库初始化模块中导出的数据库实例
-// 如果你使用 TypeScript，则可能需要先编译成 js
+const db = require("./db");
 
 // 插入主画布节点
 const createGraphNode = (node) => {
   const stmt = db.prepare(`
-    INSERT INTO GraphNodes (id, tag, content, color, usage, pos_x, pos_y, state)
-    VALUES (@id, @tag, @content, @color, @usage, @pos_x, @pos_y, @state)
+    INSERT INTO GraphNodes (id, tag, content, color, usage, pos_x, pos_y, state, created_by, updated_by)
+    VALUES (@id, @tag, @content, @color, @usage, @pos_x, @pos_y, @state, @created_by, @updated_by)
   `);
   stmt.run({
     ...node,
     state: JSON.stringify(node.state),
+    created_by: node.created_by || "system", // 如果没提供，可以设定默认值
+    updated_by: node.updated_by || "system",
   });
 };
 
 // 更新 GraphNode 的状态字段
-const updateGraphNodeState = (id, newState) => {
+const updateGraphNodeState = (id, newState, operator = "system") => {
   const stmt = db.prepare(`
     UPDATE GraphNodes
-    SET state = @state, updated_at = CURRENT_TIMESTAMP
+    SET state = @state, updated_at = CURRENT_TIMESTAMP, updated_by = @updated_by
     WHERE id = @id
   `);
-  stmt.run({ id, state: JSON.stringify(newState) });
+  stmt.run({ id, state: JSON.stringify(newState), updated_by: operator });
 };
 
-// 插入边
+// 插入边（注意，如果需要记录创建人和最近操作人，也需要传入这两个字段）
 const createEdge = (edge) => {
   const stmt = db.prepare(`
-    INSERT INTO Edges (id, source_node_id, target_node_id, weight)
-    VALUES (@id, @source_node_id, @target_node_id, @weight)
+    INSERT INTO Edges (id, source_node_id, target_node_id, weight, created_by, updated_by)
+    VALUES (@id, @source_node_id, @target_node_id, @weight, @created_by, @updated_by)
   `);
-  stmt.run(edge);
+  stmt.run({
+    ...edge,
+    created_by: edge.created_by || "system",
+    updated_by: edge.updated_by || "system",
+  });
 };
 
 // 插入内部画布状态（保存 React Flow 状态）
 const createInternalCanvasState = (internal) => {
   const stmt = db.prepare(`
-    INSERT INTO InternalCanvasState (id, parent_node_id, react_flow_state)
-    VALUES (@id, @parent_node_id, @react_flow_state)
+    INSERT INTO InternalCanvasState (id, parent_node_id, react_flow_state, created_by, updated_by)
+    VALUES (@id, @parent_node_id, @react_flow_state, @created_by, @updated_by)
   `);
   stmt.run({
     ...internal,
     react_flow_state: JSON.stringify(internal.react_flow_state),
+    created_by: internal.created_by || "system",
+    updated_by: internal.updated_by || "system",
   });
 };
 
@@ -61,26 +67,33 @@ const getGraphData = () => {
   return { nodes, edges };
 };
 
-// 删除node节点以及相关的边
+// 删除 node 节点以及相关的边
 const deleteNode = (nodeId) => {
-  const stmt = db.prepare(`
-    DELETE FROM GraphNodes WHERE id = @id
-  `);
-  stmt.run({ id: nodeId });
-
+  // 先删除与节点相关的边
   const edgesStmt = db.prepare(`
     DELETE FROM Edges WHERE source_node_id = @id OR target_node_id = @id
   `);
   edgesStmt.run({ id: nodeId });
+
+  // 再删除节点
+  const stmt = db.prepare(`
+    DELETE FROM GraphNodes WHERE id = @id
+  `);
+  stmt.run({ id: nodeId });
 };
 
-// 根据nodeid连接两个节点
-const connectNodes = (sourceNodeId, targetNodeId) => {
+// 根据 nodeId 连接两个节点（同样可以加入操作人记录）
+const connectNodes = (sourceNodeId, targetNodeId, operator = "system") => {
   const stmt = db.prepare(`
-    INSERT INTO Edges (source_node_id, target_node_id)
-    VALUES (@sourceNodeId, @targetNodeId)
+    INSERT INTO Edges (source_node_id, target_node_id, created_by, updated_by)
+    VALUES (@sourceNodeId, @targetNodeId, @created_by, @updated_by)
   `);
-  stmt.run({ sourceNodeId, targetNodeId });
+  stmt.run({
+    sourceNodeId,
+    targetNodeId,
+    created_by: operator,
+    updated_by: operator,
+  });
 };
 
 module.exports = {

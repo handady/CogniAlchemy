@@ -10,6 +10,7 @@ export interface NodeDatum {
   tag: string;
   color: string;
   usage: number | null;
+  content: any;
   x?: number;
   y?: number;
   fx?: number | null;
@@ -75,12 +76,7 @@ export const useD3ForceSimulation = ({
 
     // 从 props 中获取数据
     // const { nodes, links } = data;
-    const nodes: NodeDatum[] = data.nodes;
-    const links: LinkDatum[] = data.links.map((edge: any) => ({
-      source: edge.source_node_id,
-      target: edge.target_node_id,
-      value: edge.weight,
-    }));
+    const { nodes, links } = data;
 
     // 初始宽高
     let width = container.clientWidth;
@@ -285,7 +281,7 @@ export const useD3ForceSimulation = ({
       .style("font-size", (d) => `${fontSizeScale(d.usage || 1)}px`)
       .style("user-select", "none");
 
-    // 4.1 创建一组独立文本，用于显示节点 id（默认隐藏）
+    // 4.1 创建一组独立文本，用于显示节点 content（默认隐藏）
     const nodeIdText = zoomContainer
       .append("g")
       .attr("class", "node-ids")
@@ -293,7 +289,7 @@ export const useD3ForceSimulation = ({
       .data(nodes)
       .join("text")
       .attr("class", "node-id")
-      .text((d) => d.id)
+      .text((d) => d.content)
       .attr("text-anchor", "middle")
       .attr("pointer-events", "none")
       .style("font-size", (d) => `${fontSizeScale(d.usage || 1)}px`)
