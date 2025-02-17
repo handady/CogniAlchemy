@@ -7,7 +7,8 @@ import * as d3DragHandlers from "./d3DragHandlers";
 
 export interface NodeDatum {
   id: string;
-  tag: string;
+  tag: any;
+  tagLabels?: any;
   color: string;
   usage: number | null;
   content: any;
@@ -31,6 +32,7 @@ export interface GraphData {
 export interface UseD3ForceSimulationParams {
   containerRef: React.RefObject<HTMLElement>;
   data: GraphData | null;
+  tagData: any[];
   onNodeContextMenu?: (event: MouseEvent, node: NodeDatum) => void;
   onNodeClick?: (event: MouseEvent, node: NodeDatum) => void;
 }
@@ -42,6 +44,7 @@ export interface UseD3ForceSimulationParams {
 export const useD3ForceSimulation = ({
   containerRef,
   data,
+  tagData,
   onNodeContextMenu,
   onNodeClick,
 }: UseD3ForceSimulationParams) => {
@@ -274,7 +277,7 @@ export const useD3ForceSimulation = ({
     nodeGroup
       .append("text")
       .attr("class", "node-tag")
-      .text((d) => d.tag)
+      .text((d) => d.tagLabels || "")
       .attr("text-anchor", "middle")
       .attr("alignment-baseline", "middle")
       .attr("pointer-events", "none")

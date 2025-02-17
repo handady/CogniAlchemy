@@ -60,16 +60,32 @@ const getGraphData = () => {
   const nodesStmt = db.prepare("SELECT * FROM GraphNodes");
   const nodes = nodesStmt.all().map((node) => ({
     ...node,
-    // 将 tag 从 JSON 字符串转换为数组，若为空则返回空数组
     tag: JSON.parse(node.tag || "[]"),
     state: JSON.parse(node.state || "{}"),
+  }));
+
+  // 查询所有标签
+  const tagsStmt = db.prepare("SELECT * FROM Tags");
+  const tags = tagsStmt.all();
+
+  // 构造一个从 tag id 到标签 label 的映射
+  const tagMap = tags.reduce((acc, tag) => {
+    acc[tag.id] = tag.label;
+    return acc;
+  }, {});
+
+  // 对每个节点生成一个新的字段 tagLabels（或覆盖 tag 字段），用于展示标签名称
+  const nodesWithLabels = nodes.map((node) => ({
+    ...node,
+    // 使用 tag 数组中每个标签的 id 在 tagMap 中查找对应 label
+    tagLabels: node.tag.map((tagId) => tagMap[tagId] || tagId).join(","),
   }));
 
   // 查询所有边
   const edgesStmt = db.prepare("SELECT * FROM Edges");
   const edges = edgesStmt.all();
 
-  return { nodes, edges };
+  return { nodes: nodesWithLabels, edges };
 };
 
 // 删除 node 节点以及相关的边

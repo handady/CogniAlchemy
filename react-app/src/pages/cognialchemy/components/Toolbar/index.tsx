@@ -2,16 +2,24 @@
 import React, { useState } from "react";
 import styles from "./index.module.scss";
 import { Tooltip } from "antd";
-import { PlusCircleOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+  PlusCircleOutlined,
+  ReloadOutlined,
+  AppstoreOutlined,
+} from "@ant-design/icons";
+import { useGlobalMessage } from "@/components/GlobalMessageProvider";
 import NewNodeDialog, { NewNode } from "../NewNodeDialog"; // 根据实际路径引入
+import TagManagementDialog from "../TagManagementDialog";
 
 interface ToolbarProps {
   onReset?: () => void;
-  onRefresh?: () => void; // 刷新数据回调
+  onRefresh: () => void; // 刷新数据回调
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({ onReset, onRefresh }) => {
   const [dialogVisible, setDialogVisible] = useState(false);
+  const globalMessage = useGlobalMessage();
+  const [showTagManagement, setShowTagManagement] = useState(false);
 
   // 打开新增节点 Dialog
   const handleOpenDialog = () => {
@@ -28,12 +36,14 @@ const Toolbar: React.FC<ToolbarProps> = ({ onReset, onRefresh }) => {
     try {
       const result = await window.electronAPI.createGraphNode(newNode);
       if (result.success) {
-        console.log("Node added successfully");
+        globalMessage.success("新增节点成功");
         onRefresh && onRefresh();
       } else {
+        globalMessage.error(result.message);
         console.error("Failed to add node:", result.message);
       }
     } catch (error: any) {
+      globalMessage.error("新增节点失败");
       console.error("Error adding node:", error);
     }
     setDialogVisible(false);
@@ -70,6 +80,20 @@ const Toolbar: React.FC<ToolbarProps> = ({ onReset, onRefresh }) => {
             <ReloadOutlined />
           </button>
         </Tooltip>
+        {/* 标签管理 */}
+        <Tooltip
+          title="标签管理"
+          placement="left"
+          color="var(--primary-color)"
+          getPopupContainer={(trigger) => trigger.parentElement as HTMLElement}
+        >
+          <button
+            className={`${styles.iconBtn} border-0 cursor-pointer text-xl transition-all duration-300 py-0.5 px-1.5`}
+            onClick={() => setShowTagManagement(true)}
+          >
+            <AppstoreOutlined />
+          </button>
+        </Tooltip>
       </div>
 
       {/* 渲染新增节点 Dialog */}
@@ -77,6 +101,14 @@ const Toolbar: React.FC<ToolbarProps> = ({ onReset, onRefresh }) => {
         visible={dialogVisible}
         onCancel={handleCloseDialog}
         onConfirm={handleConfirmDialog}
+      />
+      {/* 标签管理对话框 */}
+      <TagManagementDialog
+        visible={showTagManagement}
+        onClose={() => {
+          setShowTagManagement(false);
+        }}
+        refreshTags={onRefresh}
       />
     </>
   );

@@ -38,6 +38,22 @@ const updateTag = (tag) => {
 const deleteTag = (id) => {
   const stmt = db.prepare(`DELETE FROM Tags WHERE id = ?`);
   stmt.run(id);
+  // 获取所有节点数据
+  const nodesStmt = db.prepare("SELECT id, tag FROM GraphNodes");
+  const updateStmt = db.prepare(
+    "UPDATE GraphNodes SET tag = @tag, updated_at = CURRENT_TIMESTAMP WHERE id = @id"
+  );
+
+  const nodes = nodesStmt.all();
+  nodes.forEach((node) => {
+    // 解析 tag 数组
+    let tags = JSON.parse(node.tag || "[]");
+    if (tags.includes(id)) {
+      // 过滤掉已删除的 tag id
+      const newTags = tags.filter((tagId) => tagId !== id);
+      updateStmt.run({ id: node.id, tag: JSON.stringify(newTags) });
+    }
+  });
 };
 
 module.exports = {

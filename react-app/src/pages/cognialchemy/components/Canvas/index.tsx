@@ -23,6 +23,7 @@ interface ContextMenuState {
 const Canvas: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [graphData, setGraphData] = useState<GraphData | null>(null);
+  const [tagData, setTagData] = useState<any[]>([]);
   const [contextMenu, setContextMenu] = useState<ContextMenuState>({
     visible: false,
     x: 0,
@@ -43,6 +44,10 @@ const Canvas: React.FC = () => {
 
   // 加载数据
   const fetchGraphData = useCallback(async () => {
+    const tagRes = await window.electronAPI.getTags();
+    if (tagRes.success) {
+      setTagData(tagRes.tags);
+    }
     const res = await window.electronAPI.getGraphData();
     console.log("获取图数据：", res.data);
     if (res.success) {
@@ -171,6 +176,7 @@ const Canvas: React.FC = () => {
   const { resetCanvas } = useD3ForceSimulation({
     containerRef: containerRef as React.RefObject<HTMLElement>,
     data: graphData,
+    tagData: tagData,
     onNodeContextMenu: handleNodeContextMenu,
     onNodeClick: handleNodeClick,
   });

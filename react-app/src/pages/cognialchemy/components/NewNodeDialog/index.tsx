@@ -14,7 +14,6 @@ import {
   Divider,
 } from "antd";
 import { useGlobalMessage } from "@/components/GlobalMessageProvider";
-import TagManagementDialog from "../TagManagementDialog";
 import type { SelectProps, InputRef } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { v4 as uuidv4 } from "uuid";
@@ -55,7 +54,6 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
   const [tagOptions, setTagOptions] = useState<
     { value: string; color: string; id: string }[]
   >([]);
-  const [showTagManagement, setShowTagManagement] = useState(false);
 
   // 当 Dialog 打开时，获取已有标签
   useEffect(() => {
@@ -80,18 +78,18 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
     }
   };
 
-  // 刷新tag
-  const refreshTags = () => {
-    // 清除现在选择的标签
-    form.setFieldsValue({ tag: [] });
-  };
-
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
+      const tagIds = values.tag
+        .map((tag: string) => {
+          const tagOption = tagOptions.find((option) => option.value === tag);
+          return tagOption ? tagOption.id : null;
+        })
+        .filter((id: string | null) => id !== null);
       const newNode: NewNode = {
         id: uuidv4(),
-        tag: values.tag, // 多选标签数组
+        tag: tagIds, // 多选标签数组
         content: values.content,
         color: values.color, // 颜色值
         usage: 1,
@@ -250,12 +248,6 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
                           >
                             新增标签
                           </Button>
-                          <Button
-                            type="primary"
-                            onClick={() => setShowTagManagement(true)}
-                          >
-                            标签管理
-                          </Button>
                         </Space>
                       </>
                     )}
@@ -273,15 +265,6 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
           </Form.Item>
         </Form>
       </Modal>
-      {/* 标签管理对话框 */}
-      <TagManagementDialog
-        visible={showTagManagement}
-        onClose={() => {
-          setShowTagManagement(false);
-          fetchTags(); // 刷新下拉选项
-        }}
-        refreshTags={refreshTags}
-      />
     </>
   );
 };
