@@ -12,7 +12,7 @@ declare global {
       connectNodes: (sourceId: string, targetId: string) => Promise<any>;
       getTags: () => Promise<any>;
       createTag: (tagData: any) => Promise<any>;
-      updateTag: (tagId: string, tagData: any) => Promise<any>;
+      updateTag: (tagData: any) => Promise<any>;
       deleteTag: (tagId: string) => Promise<any>;
     };
   }

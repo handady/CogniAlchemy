@@ -13,6 +13,8 @@ import {
   Space,
   Divider,
 } from "antd";
+import { useGlobalMessage } from "@/components/GlobalMessageProvider";
+import TagManagementDialog from "../TagManagementDialog";
 import type { SelectProps, InputRef } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { v4 as uuidv4 } from "uuid";
@@ -44,14 +46,16 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
   onCancel,
   onConfirm,
 }) => {
+  const globalMessage = useGlobalMessage();
   const [form] = Form.useForm();
   const inputRef = useRef<InputRef>(null);
   const [inputValue, setInputValue] = useState("");
   const [color, setColor] = useState("#f5347f");
   // 标签选项状态，从数据库获取，每个选项包含标签文本和颜色（可选）
   const [tagOptions, setTagOptions] = useState<
-    { value: string; color: string }[]
+    { value: string; color: string; id: string }[]
   >([]);
+  const [showTagManagement, setShowTagManagement] = useState(false);
 
   // 当 Dialog 打开时，获取已有标签
   useEffect(() => {
@@ -66,6 +70,7 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
       // 将标签转换为 Select 组件的 options 格式
       const tags = result.tags || [];
       const options = tags.map((tag: any) => ({
+        id: tag.id,
         value: tag.label,
         color: tag.color || "#f5347f",
       }));
@@ -73,6 +78,12 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
     } catch (error) {
       console.error("获取标签失败：", error);
     }
+  };
+
+  // 刷新tag
+  const refreshTags = () => {
+    // 清除现在选择的标签
+    form.setFieldsValue({ tag: [] });
   };
 
   const handleOk = async () => {
@@ -133,12 +144,14 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
       try {
         const result = await window.electronAPI.createTag(newTag);
         if (result.success) {
+          globalMessage.success("新增标签成功");
           await fetchTags(); // 刷新下拉选项
           // 将新增的标签加入表单中
           const currentTags: string[] = form.getFieldValue("tag") || [];
           form.setFieldsValue({ tag: [...currentTags, inputValue] });
           setInputValue("");
         } else {
+          globalMessage.error(result.message);
           console.error("新增标签失败：", result.message);
         }
       } catch (error) {
@@ -148,111 +161,128 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
   };
 
   return (
-    <Modal
-      title="新增节点"
-      className={styles.NewNodeDialog}
-      open={visible}
-      centered
-      onCancel={() => {
-        form.resetFields();
-        onCancel();
-        setColor("#f5347f");
-      }}
-      footer={
-        <div style={{ textAlign: "center" }}>
-          <Button
-            onClick={() => {
-              form.resetFields();
-              onCancel();
-              setColor("#f5347f");
-            }}
-            style={{ marginRight: 16 }}
-            type="default"
-          >
-            取消
-          </Button>
-          <Button onClick={handleOk} type="primary">
-            确认
-          </Button>
-        </div>
-      }
-      onValuesChange={(changedValues: any) => {
-        if (changedValues.color) {
-          setColor(changedValues.color);
+    <>
+      <Modal
+        title="新增节点"
+        className={styles.NewNodeDialog}
+        open={visible}
+        centered
+        onCancel={() => {
+          form.resetFields();
+          onCancel();
+          setColor("#f5347f");
+        }}
+        footer={
+          <div style={{ textAlign: "center" }}>
+            <Button
+              onClick={() => {
+                form.resetFields();
+                onCancel();
+                setColor("#f5347f");
+              }}
+              style={{ marginRight: 16 }}
+              type="default"
+            >
+              取消
+            </Button>
+            <Button onClick={handleOk} type="primary">
+              确认
+            </Button>
+          </div>
         }
-      }}
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={{ color: "#f5347f", tag: [] }}
       >
-        <Form.Item label="标签">
-          <Row gutter={8}>
-            <Col>
-              <Form.Item
-                name="color"
-                noStyle
-                rules={[{ required: true, message: "请选择颜色" }]}
-              >
-                <ColorPicker
-                  value={color}
-                  onChange={(newColor) => {
-                    const hex = newColor.toHexString();
-                    setColor(hex);
-                    form.setFieldsValue({ color: hex });
-                  }}
-                />
-              </Form.Item>
-            </Col>
-            <Col flex="auto">
-              <Form.Item
-                name="tag"
-                noStyle
-                rules={[{ required: true, message: "请输入标签" }]}
-              >
-                <Select
-                  mode="multiple"
-                  placeholder="没有值"
-                  tagRender={tagRender}
-                  style={{ width: "100%" }}
-                  options={tagOptions}
-                  dropdownRender={(menu) => (
-                    <>
-                      {menu}
-                      <Divider style={{ margin: "8px 0" }} />
-                      <Space style={{ padding: "0 8px 4px" }}>
-                        <Input
-                          placeholder="请输入标签"
-                          ref={inputRef}
-                          value={inputValue}
-                          onChange={onNameChange}
-                          onKeyDown={(e) => e.stopPropagation()}
-                        />
-                        <Button
-                          type="text"
-                          icon={<PlusOutlined />}
-                          onClick={handleAddNewTag}
-                        >
-                          新增标签
-                        </Button>
-                      </Space>
-                    </>
-                  )}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form.Item>
-        <Form.Item
-          name="content"
-          label="内容"
-          rules={[{ required: true, message: "请输入内容" }]}
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{ color: "#f5347f", tag: [] }}
+          onValuesChange={(changedValues) => {
+            if (changedValues.color) {
+              setColor(changedValues.color);
+            }
+          }}
         >
-          <Input.TextArea rows={2} placeholder="请输入节点内容" />
-        </Form.Item>
-      </Form>
-    </Modal>
+          <Form.Item label="标签">
+            <Row gutter={8}>
+              <Col>
+                <Form.Item
+                  name="color"
+                  noStyle
+                  rules={[{ required: true, message: "请选择颜色" }]}
+                >
+                  <ColorPicker
+                    value={color}
+                    onChange={(newColor) => {
+                      const hex = newColor.toHexString();
+                      setColor(hex);
+                      form.setFieldsValue({ color: hex });
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col flex="auto">
+                <Form.Item
+                  name="tag"
+                  noStyle
+                  rules={[{ required: true, message: "请输入标签" }]}
+                >
+                  <Select
+                    mode="multiple"
+                    placeholder="没有值"
+                    tagRender={tagRender}
+                    style={{ width: "100%" }}
+                    options={tagOptions}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Divider style={{ margin: "8px 0" }} />
+                        <Space style={{ padding: "0 8px 4px" }}>
+                          <Input
+                            placeholder="请输入标签"
+                            ref={inputRef}
+                            value={inputValue}
+                            onChange={onNameChange}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          />
+                          <Button
+                            type="text"
+                            icon={<PlusOutlined />}
+                            onClick={handleAddNewTag}
+                          >
+                            新增标签
+                          </Button>
+                          <Button
+                            type="primary"
+                            onClick={() => setShowTagManagement(true)}
+                          >
+                            标签管理
+                          </Button>
+                        </Space>
+                      </>
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form.Item>
+          <Form.Item
+            name="content"
+            label="内容"
+            rules={[{ required: true, message: "请输入内容" }]}
+          >
+            <Input.TextArea rows={2} placeholder="请输入节点内容" />
+          </Form.Item>
+        </Form>
+      </Modal>
+      {/* 标签管理对话框 */}
+      <TagManagementDialog
+        visible={showTagManagement}
+        onClose={() => {
+          setShowTagManagement(false);
+          fetchTags(); // 刷新下拉选项
+        }}
+        refreshTags={refreshTags}
+      />
+    </>
   );
 };
 

@@ -1,7 +1,9 @@
-:global(.ant-modal-content) {
-  background-image: url("@/assets/images/add.jpg");
-  background-size: cover;
-}
-:global(.ant-modal-header) {
-  background-color: transparent !important;
+.NewNodeDialog {
+  :global(.ant-modal-content) {
+    background-image: url("@/assets/images/add.jpg");
+    background-size: cover;
+  }
+  :global(.ant-modal-header) {
+    background-color: transparent !important;
+  }
 }
