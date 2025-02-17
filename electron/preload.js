@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   createTag: (tag) => ipcRenderer.invoke("create-tag", tag),
   updateTag: (tag) => ipcRenderer.invoke("update-tag", tag),
   deleteTag: (tagId) => ipcRenderer.invoke("delete-tag", tagId),
+  disconnectNode: (nodeId) => ipcRenderer.invoke("disconnect-node", nodeId),
 });
 
 window.addEventListener("DOMContentLoaded", () => {

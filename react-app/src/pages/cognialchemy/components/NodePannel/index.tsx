@@ -2,6 +2,7 @@
 import React from "react";
 import { NodeDatum } from "../Canvas/hooks/useD3ForceSimulation";
 import styles from "./index.module.scss";
+import { useGlobalMessage } from "@/components/GlobalMessageProvider";
 
 export interface NodePannelProps {
   x: number;
@@ -20,15 +21,32 @@ const NodePannel: React.FC<NodePannelProps> = ({
   onClose,
   onConnect,
 }) => {
+  const globalMessage = useGlobalMessage();
+
+  // 删除节点
   const onDeleteNode = async () => {
     if (node && node.id) {
       const result = await window.electronAPI.deleteNode(node.id);
       if (result.success) {
-        console.log("Node deleted successfully");
+        globalMessage.success("删除节点成功");
         onRefresh();
         onClose();
       } else {
-        console.error("Failed to delete node:", result.message);
+        globalMessage.error(result.message);
+      }
+    }
+  };
+
+  // 断开节点连线
+  const onDisconnectNode = async () => {
+    if (node && node.id) {
+      const result = await window.electronAPI.disconnectNode(node.id);
+      if (result.success) {
+        globalMessage.success("断开节点连线成功");
+        onRefresh();
+        onClose();
+      } else {
+        globalMessage.error(result.message);
       }
     }
   };
@@ -68,8 +86,7 @@ const NodePannel: React.FC<NodePannelProps> = ({
       <button
         className={`${styles.btn} ${styles.disconnect}`}
         onClick={() => {
-          //   onRefresh();
-          onClose();
+          onDisconnectNode();
         }}
       >
         断开

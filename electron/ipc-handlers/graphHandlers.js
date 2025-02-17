@@ -60,3 +60,14 @@ ipcMain.handle(
     }
   }
 );
+
+// 根据nodeId断开此节点的所有连线
+ipcMain.handle("disconnect-node", async (event, nodeId) => {
+  try {
+    dbOps.disconnectNode(nodeId);
+    return { success: true };
+  } catch (error) {
+    console.error("disconnectNode error:", error);
+    return { success: false, message: error.message };
+  }
+});

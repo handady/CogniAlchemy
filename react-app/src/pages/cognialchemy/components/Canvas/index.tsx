@@ -6,6 +6,7 @@ import {
   NodeDatum,
   LinkDatum,
 } from "./hooks/useD3ForceSimulation";
+import { useGlobalMessage } from "@/components/GlobalMessageProvider";
 import NodePannel from "../NodePannel"; // 根据实际路径引入
 
 interface GraphData {
@@ -22,8 +23,8 @@ interface ContextMenuState {
 
 const Canvas: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const globalMessage = useGlobalMessage();
   const [graphData, setGraphData] = useState<GraphData | null>(null);
-  const [tagData, setTagData] = useState<any[]>([]);
   const [contextMenu, setContextMenu] = useState<ContextMenuState>({
     visible: false,
     x: 0,
@@ -44,12 +45,7 @@ const Canvas: React.FC = () => {
 
   // 加载数据
   const fetchGraphData = useCallback(async () => {
-    const tagRes = await window.electronAPI.getTags();
-    if (tagRes.success) {
-      setTagData(tagRes.tags);
-    }
     const res = await window.electronAPI.getGraphData();
-    console.log("获取图数据：", res.data);
     if (res.success) {
       const { nodes: dbNodes, edges: dbEdges } = res.data;
       setGraphData({
@@ -118,13 +114,14 @@ const Canvas: React.FC = () => {
         .connectNodes(connectionSourceRef.current.id, node.id)
         .then((result: any) => {
           if (result.success) {
-            console.log("连接成功。");
+            globalMessage.success("连接成功");
             fetchGraphData();
           } else {
-            console.error("连接失败：", result.message);
+            globalMessage.error(result.message);
           }
         })
         .catch((error: any) => {
+          globalMessage.error("连接失败");
           console.error("连接错误：", error);
         });
       // 清除连接模式和临时连线
@@ -176,7 +173,6 @@ const Canvas: React.FC = () => {
   const { resetCanvas } = useD3ForceSimulation({
     containerRef: containerRef as React.RefObject<HTMLElement>,
     data: graphData,
-    tagData: tagData,
     onNodeContextMenu: handleNodeContextMenu,
     onNodeClick: handleNodeClick,
   });

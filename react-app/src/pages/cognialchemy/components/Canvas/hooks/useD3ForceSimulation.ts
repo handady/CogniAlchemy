@@ -32,7 +32,6 @@ export interface GraphData {
 export interface UseD3ForceSimulationParams {
   containerRef: React.RefObject<HTMLElement>;
   data: GraphData | null;
-  tagData: any[];
   onNodeContextMenu?: (event: MouseEvent, node: NodeDatum) => void;
   onNodeClick?: (event: MouseEvent, node: NodeDatum) => void;
 }
@@ -44,7 +43,6 @@ export interface UseD3ForceSimulationParams {
 export const useD3ForceSimulation = ({
   containerRef,
   data,
-  tagData,
   onNodeContextMenu,
   onNodeClick,
 }: UseD3ForceSimulationParams) => {

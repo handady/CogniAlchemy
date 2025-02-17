@@ -117,6 +117,14 @@ const connectNodes = (sourceNodeId, targetNodeId, operator = "system") => {
   });
 };
 
+// 根据nodeId断开此节点的所有连线
+const disconnectNode = (nodeId) => {
+  const stmt = db.prepare(`
+    DELETE FROM Edges WHERE source_node_id = @id OR target_node_id = @id
+  `);
+  stmt.run({ id: nodeId });
+};
+
 module.exports = {
   createGraphNode,
   updateGraphNodeState,
@@ -125,4 +133,5 @@ module.exports = {
   getGraphData,
   deleteNode,
   connectNodes,
+  disconnectNode,
 };
