@@ -36,6 +36,7 @@ interface NewNodeDialogProps {
   visible: boolean;
   onCancel: () => void;
   onConfirm: (node: NewNode) => void;
+  node?: NewNode | null; // 允许 null
 }
 
 type TagRender = SelectProps["tagRender"];
@@ -44,6 +45,7 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
   visible,
   onCancel,
   onConfirm,
+  node,
 }) => {
   const globalMessage = useGlobalMessage();
   const [form] = Form.useForm();
@@ -59,8 +61,27 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
   useEffect(() => {
     if (visible) {
       fetchTags();
+      if (!node) {
+        form.resetFields();
+        setColor("#f5347f");
+      }
     }
-  }, [visible]);
+  }, [visible, node]);
+
+  // 当 tagOptions 更新后，如果是编辑模式则预填充表单
+  useEffect(() => {
+    if (visible && node && tagOptions.length > 0) {
+      form.setFieldsValue({
+        color: node.color,
+        tag: node.tag.map((tagId) => {
+          const found = tagOptions.find((option) => option.id === tagId);
+          return found ? found.value : tagId;
+        }),
+        content: node.content,
+      });
+      setColor(node.color);
+    }
+  }, [tagOptions, visible, node]);
 
   const fetchTags = async () => {
     try {
@@ -88,7 +109,7 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
         })
         .filter((id: string | null) => id !== null);
       const newNode: NewNode = {
-        id: uuidv4(),
+        id: node ? node.id : uuidv4(),
         tag: tagIds, // 多选标签数组
         content: values.content,
         color: values.color, // 颜色值
@@ -161,7 +182,7 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
   return (
     <>
       <Modal
-        title="新增节点"
+        title={node ? "编辑节点" : "新增节点"}
         className={styles.NewNodeDialog}
         open={visible}
         centered

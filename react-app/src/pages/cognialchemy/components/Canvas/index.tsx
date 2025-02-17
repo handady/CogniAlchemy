@@ -190,7 +190,10 @@ const Canvas: React.FC = () => {
           x={contextMenu.x}
           y={contextMenu.y}
           node={contextMenu.node}
-          onRefresh={fetchGraphData}
+          onRefresh={() => {
+            fetchGraphData();
+            handleCloseContextMenu();
+          }}
           onConnect={handleConnect}
           onClose={handleCloseContextMenu}
         />

@@ -8,7 +8,7 @@ import {
   AppstoreOutlined,
 } from "@ant-design/icons";
 import { useGlobalMessage } from "@/components/GlobalMessageProvider";
-import NewNodeDialog, { NewNode } from "../NewNodeDialog"; // 根据实际路径引入
+import NewNodeDialog, { NewNode } from "../NewNodeDialog";
 import TagManagementDialog from "../TagManagementDialog";
 
 interface ToolbarProps {

@@ -15,6 +15,7 @@ declare global {
       updateTag: (tagData: any) => Promise<any>;
       deleteTag: (tagId: string) => Promise<any>;
       disconnectNode: (nodeId: string) => Promise<any>;
+      updateNode: (nodeData: any) => Promise<any>;
     };
   }
 }

@@ -1,8 +1,9 @@
 // src/components/NodePannel.tsx
-import React from "react";
+import React, { useState } from "react";
 import { NodeDatum } from "../Canvas/hooks/useD3ForceSimulation";
 import styles from "./index.module.scss";
 import { useGlobalMessage } from "@/components/GlobalMessageProvider";
+import NewNodeDialog, { NewNode } from "../NewNodeDialog";
 
 export interface NodePannelProps {
   x: number;
@@ -22,6 +23,30 @@ const NodePannel: React.FC<NodePannelProps> = ({
   onConnect,
 }) => {
   const globalMessage = useGlobalMessage();
+  const [dialogVisible, setDialogVisible] = useState(false);
+
+  // 关闭 Dialog
+  const handleCloseDialog = () => {
+    setDialogVisible(false);
+  };
+
+  // 根据nodeId修改节点的属性
+  const handleConfirmDialog = async (newNode: NewNode) => {
+    try {
+      const result = await window.electronAPI.updateNode(newNode);
+      if (result.success) {
+        globalMessage.success("修改节点成功");
+        onRefresh && onRefresh();
+      } else {
+        globalMessage.error(result.message);
+        console.error("Failed to update node:", result.message);
+      }
+    } catch (error: any) {
+      globalMessage.error("修改节点失败");
+      console.error("Error updating node:", error);
+    }
+    setDialogVisible(false);
+  };
 
   // 删除节点
   const onDeleteNode = async () => {
@@ -66,8 +91,7 @@ const NodePannel: React.FC<NodePannelProps> = ({
       <button
         className={`${styles.btn} ${styles.edit}`}
         onClick={() => {
-          //   onRefresh();
-          onClose();
+          setDialogVisible(true);
         }}
       >
         修改
@@ -99,6 +123,13 @@ const NodePannel: React.FC<NodePannelProps> = ({
       >
         删除
       </button>
+      {/* 渲染新增节点 Dialog */}
+      <NewNodeDialog
+        visible={dialogVisible}
+        onCancel={handleCloseDialog}
+        onConfirm={handleConfirmDialog}
+        node={node as any}
+      />
     </div>
   );
 };

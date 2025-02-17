@@ -71,3 +71,14 @@ ipcMain.handle("disconnect-node", async (event, nodeId) => {
     return { success: false, message: error.message };
   }
 });
+
+// 根据nodeId修改节点的属性
+ipcMain.handle("update-node", async (event, nodeData) => {
+  try {
+    dbOps.updateNode(nodeData);
+    return { success: true };
+  } catch (error) {
+    console.error("updateNode error:", error);
+    return { success: false, message: error.message };
+  }
+});

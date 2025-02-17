@@ -125,6 +125,21 @@ const disconnectNode = (nodeId) => {
   stmt.run({ id: nodeId });
 };
 
+// 根据nodeId修改节点的属性
+const updateNode = (node) => {
+  const stmt = db.prepare(`
+    UPDATE GraphNodes
+    SET tag = @tag, content = @content, color = @color, usage = @usage, pos_x = @pos_x, pos_y = @pos_y, state = @state, updated_at = CURRENT_TIMESTAMP, updated_by = @updated_by
+    WHERE id = @id
+  `);
+  stmt.run({
+    ...node,
+    tag: JSON.stringify(node.tag),
+    state: JSON.stringify(node.state),
+    updated_by: node.updated_by || "system",
+  });
+};
+
 module.exports = {
   createGraphNode,
   updateGraphNodeState,
@@ -134,4 +149,5 @@ module.exports = {
   deleteNode,
   connectNodes,
   disconnectNode,
+  updateNode,
 };
