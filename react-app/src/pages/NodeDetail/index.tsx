@@ -27,6 +27,8 @@ const NodeDetail: React.FC = () => {
   // 用来保存 Excalidraw 初始场景数据（如果有的话）
   const [initialData, setInitialData] = useState<any>({
     libraryItems: libraryItems,
+    appState: {},
+    elements: [],
   });
   const globalMessage = useGlobalMessage();
   const navigate = useNavigate();
@@ -78,7 +80,7 @@ const NodeDetail: React.FC = () => {
   }
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={{ width: "100%", height: "100%" }} className="node-detail">
       <Excalidraw initialData={initialData} langCode="zh-CN" />
       <button className={styles["close-btn"]} onClick={() => navigate(-1)}>
         返回
