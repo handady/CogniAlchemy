@@ -1,5 +1,6 @@
 // src/components/Canvas.tsx
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import Toolbar from "../Toolbar";
 import {
   useD3ForceSimulation,
@@ -24,6 +25,7 @@ interface ContextMenuState {
 const Canvas: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const globalMessage = useGlobalMessage();
+  const navigate = useNavigate();
   const [graphData, setGraphData] = useState<GraphData | null>(null);
   const [contextMenu, setContextMenu] = useState<ContextMenuState>({
     visible: false,
@@ -129,7 +131,7 @@ const Canvas: React.FC = () => {
       setTempLine(null);
       setConnectionSourceEvent(null);
     } else {
-      console.log("非连接模式：", node.id);
+      navigate(`/node/${node.id}`);
     }
   };
 

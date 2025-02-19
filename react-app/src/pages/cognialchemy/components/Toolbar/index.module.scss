@@ -11,8 +11,9 @@
       background-color: rgba($color: $primary-color, $alpha: 0.3);
     }
   }
+}
 
-  :global(.ant-tooltip) {
-    user-select: none;
-  }
+:global(.ant-tooltip) {
+  user-select: none;
+  font-size: 14px;
 }

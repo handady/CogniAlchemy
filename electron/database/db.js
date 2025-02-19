@@ -23,7 +23,7 @@ db.prepare(
     usage REAL,
     pos_x REAL,           -- 节点在主画布上的 x 坐标（可选）
     pos_y REAL,           -- 节点在主画布上的 y 坐标（可选）
-    state TEXT,           -- 以 JSON 格式保存的节点状态信息（如显示设置、折叠状态等）
+    state TEXT,           -- 存储节点详情的id
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_by TEXT,      -- 创建人
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -76,6 +76,36 @@ db.prepare(
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+`
+).run();
+
+// 新建NodeDetails表， 存储节点的详细信息
+db.prepare(
+  `
+  -- 创建 NodeDetails 表
+  CREATE TABLE IF NOT EXISTS NodeDetails (
+    id TEXT PRIMARY KEY,
+    node_id TEXT NOT NULL,  -- 对应 GraphNodes 表中的节点 id
+    detail TEXT,            -- 详细信息，比如 Markdown 文本、JSON 数据等
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT,
+    updated_by TEXT,
+    FOREIGN KEY (node_id) REFERENCES GraphNodes(id) ON DELETE CASCADE
+  );
+
+  -- 为 node_id 添加索引，加速查询
+  CREATE INDEX IF NOT EXISTS idx_node_details_node_id ON NodeDetails(node_id);
+
+  -- 创建触发器，在更新时自动更新 updated_at 字段
+  CREATE TRIGGER IF NOT EXISTS trg_update_NodeDetails_updated_at
+  AFTER UPDATE ON NodeDetails
+  FOR EACH ROW
+  BEGIN
+    UPDATE NodeDetails
+    SET updated_at = CURRENT_TIMESTAMP
+    WHERE id = OLD.id;
+  END;
 `
 ).run();
 
