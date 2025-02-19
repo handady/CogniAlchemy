@@ -1,0 +1,50 @@
+.export-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 70px;
+  z-index: 10;
+  background-color: #fec2d6;
+  border: none;
+  padding: 6px 20px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover {
+    background-color: #f5347f;
+    color: white;
+  }
+}
+
+.close-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 160px;
+  z-index: 10;
+  background-color: #bfefff;
+  border: none;
+  padding: 6px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+
+  &:hover {
+    background-color: #00bfff;
+    color: white;
+  }
+}
+
+.container {
+  height: 80vh;
+  width: 80%;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 16px;
+}
