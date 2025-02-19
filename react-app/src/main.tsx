@@ -6,8 +6,6 @@ import "./assets/iconfont/iconfont.js";
 import "./styles/index.scss";
 import "./index.css";
 import App from "./App.tsx";
-// react19兼容的antdesign
-import "@ant-design/v5-patch-for-react-19";
 import { ConfigProvider } from "antd";
 // redux以及持久化
 import { Provider } from "react-redux";

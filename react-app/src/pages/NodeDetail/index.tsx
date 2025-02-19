@@ -1,5 +1,5 @@
 // src/pages/NodeDetail.tsx
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Spin } from "antd";
