@@ -106,10 +106,8 @@ const Canvas: React.FC = () => {
   };
   // 当处于连接模式时，点击节点完成连接
   const handleNodeClick = (event: MouseEvent, node: NodeDatum) => {
-    console.log(event);
     if (connectionSourceRef.current) {
       if (node.id === connectionSourceRef.current.id) {
-        console.log("不能连接同一个节点。");
         return;
       }
       // 调用接口连接两个节点

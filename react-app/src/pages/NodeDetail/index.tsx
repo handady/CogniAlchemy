@@ -65,7 +65,8 @@ const NodeDetail: React.FC = () => {
     if (excalidrawAPI) {
       const sceneElements = await excalidrawAPI.getSceneElements();
       const appState = excalidrawAPI.getAppState();
-      const saveData = { elements: sceneElements, appState };
+      const files = excalidrawAPI.getFiles();
+      const saveData = { elements: sceneElements, appState, files };
       try {
         const result = await window.electronAPI.updateNodeDetail(
           nodeId,
