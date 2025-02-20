@@ -171,7 +171,7 @@ export const useD3ForceSimulation = ({
           .on("end", d3DragHandlers.dragEnded(simulation))
       )
       .style("cursor", "pointer")
-      .on("mouseover", function (event, d) {
+      .on("mouseover", function (_event, d) {
         nodeGroup
           .transition()
           .duration(400)

@@ -105,7 +105,7 @@ const Canvas: React.FC = () => {
     connectionSourceRef.current = node;
   };
   // 当处于连接模式时，点击节点完成连接
-  const handleNodeClick = (event: MouseEvent, node: NodeDatum) => {
+  const handleNodeClick = (_event: MouseEvent, node: NodeDatum) => {
     if (connectionSourceRef.current) {
       if (node.id === connectionSourceRef.current.id) {
         return;
