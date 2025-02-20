@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 // 全局消息提示
 import { GlobalMessageProvider } from "./components/GlobalMessageProvider";
@@ -17,7 +17,7 @@ const App: React.FC = () => {
           <Route path="/" element={<BasicLayout />}>
             <Route index element={<div>home</div>} />
             <Route path="cogniAlchemy" element={<CogniAlchemy />} />
-            <Route path="/node/:nodeId" element={<NodeDetail />} />
+            <Route path="node/:nodeId" element={<NodeDetail />} />
             <Route path="learning" element={<div>learning</div>} />
           </Route>
         </Routes>

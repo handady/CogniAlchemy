@@ -15,7 +15,7 @@ function createWindow() {
 
   const startUrl =
     process.env.ELECTRON_START_URL ||
-    `file://${path.join(__dirname, "../react-app/build/index.html")}`;
+    path.join(__dirname, "../react-app/dist/index.html");
   win.loadURL(startUrl);
 
   // 打开开发者工具
