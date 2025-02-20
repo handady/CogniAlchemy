@@ -12,6 +12,8 @@ if (!fs.existsSync(dataDir)) {
 const dbPath = path.join(dataDir, "knowledge.db");
 const db = new Database(dbPath);
 
+try{
+
 // 1. 创建 GraphNodes 表，新增 created_by 和 updated_by 字段
 db.prepare(
   `
@@ -106,6 +108,9 @@ db.exec(`
     WHERE id = OLD.id;
   END;
 `);
+}catch(e){
+  console.log(e);
+}
 
 // 导出数据库实例和一些简单的操作函数
 module.exports = db;

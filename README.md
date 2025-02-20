@@ -31,6 +31,7 @@ CogniAlchemy/
 
 1. 根目录（如果有全局依赖）：  
    运行命令：`npm install`
+   运行 npm install 后，需要运行 npx electron-rebuild -f -w better-sqlite3
 
 2. Electron 目录：  
    进入 electron 文件夹，运行命令：`npm install`
