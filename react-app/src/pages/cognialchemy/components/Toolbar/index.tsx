@@ -7,6 +7,7 @@ import {
   ReloadOutlined,
   AppstoreOutlined,
 } from "@ant-design/icons";
+import { v4 as uuidv4 } from "uuid";
 import { useGlobalMessage } from "@/components/GlobalMessageProvider";
 import NewNodeDialog, { NewNode } from "../NewNodeDialog";
 import TagManagementDialog from "../TagManagementDialog";
@@ -36,8 +37,20 @@ const Toolbar: React.FC<ToolbarProps> = ({ onReset, onRefresh }) => {
     try {
       const result = await window.electronAPI.createGraphNode(newNode);
       if (result.success) {
-        globalMessage.success("新增节点成功");
-        onRefresh && onRefresh();
+        const nodeDetailResult = await window.electronAPI.createNodeDetail({
+          id: uuidv4(),
+          node_id: newNode.id,
+          detail: "",
+          created_by: "韩思远",
+          updated_by: "韩思远",
+        });
+        if (nodeDetailResult.success) {
+          globalMessage.success("新增节点成功");
+          onRefresh && onRefresh();
+        } else {
+          globalMessage.error("新增节点失败");
+          console.error("Failed to add node detail:", nodeDetailResult.message);
+        }
       } else {
         globalMessage.error(result.message);
         console.error("Failed to add node:", result.message);

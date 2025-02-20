@@ -17,17 +17,17 @@ const createNodeDetail = (detailData) => {
 };
 
 // 更新节点详情
-const updateNodeDetail = (id, newDetail, operator = "system") => {
+const updateNodeDetail = (node_id, newDetail, operator = "system") => {
   const stmt = db.prepare(`
     UPDATE NodeDetails
     SET detail = @detail,
         updated_at = CURRENT_TIMESTAMP,
         updated_by = @updated_by
-    WHERE id = @id
+    WHERE node_id = @node_id
   `);
   stmt.run({
-    id,
-    detail: newDetail,
+    node_id,
+    detail: JSON.stringify(newDetail),
     updated_by: operator,
   });
 };
@@ -37,7 +37,15 @@ const getNodeDetail = (node_id) => {
   const stmt = db.prepare(`
     SELECT * FROM NodeDetails WHERE node_id = ?
   `);
-  return stmt.get(node_id);
+  const row = stmt.get(node_id);
+  if (row && row.detail) {
+    try {
+      row.detail = JSON.parse(row.detail);
+    } catch (error) {
+      console.error("解析 detail 失败：", error);
+    }
+  }
+  return row;
 };
 
 // 删除节点详情
