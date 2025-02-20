@@ -1,5 +1,5 @@
 {
-  "name": "cognialchemy",
+  "name": "CogniAlchemy",
   "version": "1.0.0",
   "description": "CogniAlchemy - an awesome Electron & React application",
   "main": "index.js",
@@ -28,7 +28,11 @@
       "main": "electron/main.js"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "nsis": {
+        "oneClick": false,
+        "allowToChangeInstallationDirectory": true
+      }
     },
     "mac": {
       "target": "dmg"
