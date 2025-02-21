@@ -49,6 +49,38 @@ export const useD3ForceSimulation = ({
     // const { nodes, links } = data;
     const { nodes, links } = data;
 
+    const tagLinks = [] as any;
+    const tagMap = {} as any;
+    // 构建一个 map，key 为标签，value 为拥有该标签的节点集合
+    nodes.forEach((node) => {
+      if (node.tag && node.tag.length > 0) {
+        node.tag.forEach((tag: any) => {
+          if (!tagMap[tag]) {
+            tagMap[tag] = [];
+          }
+          tagMap[tag].push(node);
+        });
+      }
+    });
+    // 根据 tagMap 生成虚拟链接（可以采用简单的两两配对或选取一个参考节点连接所有节点）
+    Object.values(tagMap).forEach((groupNodes: any) => {
+      if (groupNodes.length > 1) {
+        for (let i = 0; i < groupNodes.length; i++) {
+          for (let j = i + 1; j < groupNodes.length; j++) {
+            tagLinks.push({
+              source: groupNodes[i].id,
+              target: groupNodes[j].id,
+              distance: 60, // 设置较短的距离让群组内节点聚集
+              strength: 0.08, // 虚拟连接的吸引力
+              virtual: true,
+            });
+          }
+        }
+      }
+    });
+    // 将原有的链接与虚拟的标签链接合并（如果希望全局和局部同时作用）
+    const allLinks = [...links, ...tagLinks];
+
     // 初始宽高
     let width = container.clientWidth;
     let height = container.clientHeight;
@@ -98,14 +130,17 @@ export const useD3ForceSimulation = ({
       .force(
         "link",
         d3
-          .forceLink<NodeDatum, LinkDatum>(links)
+          .forceLink<NodeDatum, LinkDatum>(allLinks)
           .id((d) => d.id)
-          .distance(50)
+          // 根据是否虚拟链接设置不同距离，虚拟连接较短
+          .distance((l) => (l.virtual ? l.distance || 80 : 60))
+          // 同样，可以设置虚拟链接的 strength
+          .strength((l) => (l.virtual ? l.strength || 0.1 : 0.8))
       )
       .force("charge", d3.forceManyBody().strength(-200))
       .force("center", d3.forceCenter(0, 0))
-      .force("x", d3.forceX())
-      .force("y", d3.forceY())
+      .force("x", d3.forceX().strength(0.05))
+      .force("y", d3.forceY().strength(0.05))
       .force(
         "collision",
         d3
@@ -206,8 +241,8 @@ export const useD3ForceSimulation = ({
           .style("opacity", 1);
 
         const currentTransform = d3.zoomTransform(svg.node() as SVGSVGElement);
-        const scaleThresholdHalf = 1.35;
-        const scaleThreshold = 2;
+        const scaleThresholdHalf = 0.95;
+        const scaleThreshold = 1.5;
         if (currentTransform.k <= scaleThresholdHalf) {
           nodeIdText
             .transition()
@@ -265,7 +300,7 @@ export const useD3ForceSimulation = ({
       .attr("pointer-events", "none")
       .style("font-size", (d) => `${fontSizeScale(d.usage || 1)}px`)
       .style("user-select", "none")
-      .style("opacity", 0);
+      .style("opacity", 0.5);
 
     // simulation 每次 tick 时更新连线、节点和 id 文本的位置
     simulation.on("tick", () => {
@@ -303,8 +338,8 @@ export const useD3ForceSimulation = ({
         } else {
           zoomContainer.attr("transform", event.transform);
         }
-        const scaleThresholdHalf = 1.35;
-        const scaleThreshold = 2;
+        const scaleThresholdHalf = 0.95;
+        const scaleThreshold = 1.5;
         if (event.transform.k > scaleThreshold) {
           nodeIdText
             .transition()

@@ -18,6 +18,9 @@ export interface LinkDatum {
   source: string | NodeDatum;
   target: string | NodeDatum;
   value: number;
+  virtual?: boolean;
+  distance?: number;
+  strength?: number;
 }
 
 export interface GraphData {
