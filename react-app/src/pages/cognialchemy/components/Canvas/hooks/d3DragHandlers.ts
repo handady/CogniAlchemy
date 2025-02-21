@@ -1,6 +1,6 @@
 // /d3DragHandlers.ts
 import * as d3 from "d3";
-import { NodeDatum } from "./useD3ForceSimulation.ts";
+import { NodeDatum } from "./types.ts";
 
 /**
  * 拖拽开始

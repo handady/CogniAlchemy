@@ -1,6 +1,6 @@
 // src/components/NodePannel.tsx
 import React, { useState } from "react";
-import { NodeDatum } from "../Canvas/hooks/useD3ForceSimulation";
+import { NodeDatum } from "../Canvas/hooks/types";
 import styles from "./index.module.scss";
 import { useGlobalMessage } from "@/components/GlobalMessageProvider";
 import NewNodeDialog, { NewNode } from "../NewNodeDialog";
