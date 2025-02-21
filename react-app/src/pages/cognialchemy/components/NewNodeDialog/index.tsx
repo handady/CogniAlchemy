@@ -54,7 +54,7 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
   const [color, setColor] = useState("#f5347f");
   // 标签选项状态，从数据库获取，每个选项包含标签文本和颜色（可选）
   const [tagOptions, setTagOptions] = useState<
-    { value: string; color: string; id: string }[]
+    { value: string; color: string; id: string; label: string }[]
   >([]);
 
   // 当 Dialog 打开时，获取已有标签
@@ -90,7 +90,8 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
       const tags = result.tags || [];
       const options = tags.map((tag: any) => ({
         id: tag.id,
-        value: tag.label,
+        value: tag.id, // 使用 id 保证唯一性
+        label: tag.label, // 显示标签文本
         color: tag.color || "#f5347f",
       }));
       setTagOptions(options);
@@ -102,17 +103,12 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      const tagIds = values.tag
-        .map((tag: string) => {
-          const tagOption = tagOptions.find((option) => option.value === tag);
-          return tagOption ? tagOption.id : null;
-        })
-        .filter((id: string | null) => id !== null);
+      // values.tag 已经是数组形式的 tag id
       const newNode: NewNode = {
         id: node ? node.id : uuidv4(),
-        tag: tagIds, // 多选标签数组
+        tag: values.tag, // 直接使用 tag id 数组
         content: values.content,
-        color: values.color, // 颜色值
+        color: values.color,
         usage: 1,
         pos_x: 0,
         pos_y: 0,
@@ -130,20 +126,22 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
 
   // 自定义标签渲染，使用最新颜色
   const tagRender: TagRender = (props) => {
-    const { label, closable, onClose } = props;
+    const { label, closable, onClose, value } = props;
+    const option = tagOptions.find((opt) => opt.id === value);
+    const tagColor = option ? option.color : "#f5347f";
     const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
       event.preventDefault();
       event.stopPropagation();
     };
     return (
       <Tag
-        color={color}
+        color={tagColor}
         onMouseDown={onPreventMouseDown}
         closable={closable}
         onClose={onClose}
         style={{ marginInlineEnd: 4 }}
       >
-        {label}
+        {option ? option.label : label}
       </Tag>
     );
   };
@@ -166,8 +164,6 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
           globalMessage.success("新增标签成功");
           await fetchTags(); // 刷新下拉选项
           // 将新增的标签加入表单中
-          const currentTags: string[] = form.getFieldValue("tag") || [];
-          form.setFieldsValue({ tag: [...currentTags, inputValue] });
           setInputValue("");
         } else {
           globalMessage.error(result.message);
@@ -235,6 +231,12 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
                       setColor(hex);
                       form.setFieldsValue({ color: hex });
                     }}
+                    panelRender={(panel) => (
+                      <div className="custom-panel">
+                        <div>新增标签的颜色</div>
+                        {panel}
+                      </div>
+                    )}
                   />
                 </Form.Item>
               </Col>
@@ -269,6 +271,8 @@ const NewNodeDialog: React.FC<NewNodeDialogProps> = ({
                           >
                             新增标签
                           </Button>
+                          {/* tag标签展示 */}
+                          <Tag color={color}>标签样例</Tag>
                         </Space>
                       </>
                     )}

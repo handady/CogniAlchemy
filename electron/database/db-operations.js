@@ -74,11 +74,21 @@ const getGraphData = () => {
     return acc;
   }, {});
 
-  // 对每个节点生成一个新的字段 tagLabels（或覆盖 tag 字段），用于展示标签名称
+  // 构造一个从 tag id 到标签 color 的映射
+  const tagColorMap = tags.reduce((acc, tag) => {
+    acc[tag.id] = tag.color;
+    return acc;
+  }, {});
+
+  // 对每个节点生成一个新的字段 tagLabels 用于展示标签名称，
+  // 并生成 tagColors 数组，用于展示标签颜色
   const nodesWithLabels = nodes.map((node) => ({
     ...node,
     // 使用 tag 数组中每个标签的 id 在 tagMap 中查找对应 label
     tagLabels: node.tag.map((tagId) => tagMap[tagId] || tagId).join(","),
+    blendedTagColor: blendColors(
+      node.tag.map((tagId) => tagColorMap[tagId] || "#f5347f")
+    ),
   }));
 
   // 查询所有边
@@ -139,6 +149,39 @@ const updateNode = (node) => {
     updated_by: node.updated_by || "system",
   });
 };
+
+function blendColors(colors) {
+  if (!colors.length) return "#000000";
+
+  let totalR = 0,
+    totalG = 0,
+    totalB = 0;
+  colors.forEach((hex) => {
+    // 去掉可能存在的 #
+    hex = hex.replace("#", "");
+    // 如果是3位数的颜色，扩展为6位
+    if (hex.length === 3) {
+      hex = hex
+        .split("")
+        .map((c) => c + c)
+        .join("");
+    }
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    totalR += r;
+    totalG += g;
+    totalB += b;
+  });
+  const count = colors.length;
+  const avgR = Math.round(totalR / count);
+  const avgG = Math.round(totalG / count);
+  const avgB = Math.round(totalB / count);
+
+  // 转换回 hex 格式
+  const toHex = (num) => num.toString(16).padStart(2, "0");
+  return `#${toHex(avgR)}${toHex(avgG)}${toHex(avgB)}`;
+}
 
 module.exports = {
   createGraphNode,

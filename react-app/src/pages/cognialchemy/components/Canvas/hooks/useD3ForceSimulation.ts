@@ -83,12 +83,12 @@ export const useD3ForceSimulation = ({
       grad
         .append("stop")
         .attr("offset", "0%")
-        .attr("stop-color", d.color)
+        .attr("stop-color", d.blendedTagColor)
         .attr("stop-opacity", 0.4);
       grad
         .append("stop")
         .attr("offset", "100%")
-        .attr("stop-color", d.color)
+        .attr("stop-color", d.blendedTagColor)
         .attr("stop-opacity", 1);
     });
 

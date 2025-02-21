@@ -5,6 +5,7 @@ export interface NodeDatum {
   tag: any;
   tagLabels?: any;
   color: string;
+  blendedTagColor: string;
   usage: number | null;
   content: any;
   x?: number;

@@ -1,6 +1,14 @@
 // src/components/TagManagementDialog.tsx
 import React, { useEffect, useState } from "react";
-import { Modal, Table, Button, Input, Space, Popconfirm } from "antd";
+import {
+  Modal,
+  Table,
+  Button,
+  Input,
+  Space,
+  Popconfirm,
+  ColorPicker,
+} from "antd";
 import { useGlobalMessage } from "@/components/GlobalMessageProvider";
 
 interface TagData {
@@ -23,6 +31,7 @@ const TagManagementDialog: React.FC<TagManagementDialogProps> = ({
   const [tags, setTags] = useState<TagData[]>([]);
   const [editingTagId, setEditingTagId] = useState<string | null>(null);
   const [editedLabel, setEditedLabel] = useState("");
+  const [editedColor, setEditedColor] = useState(""); // 新增编辑颜色状态
   const globalMessage = useGlobalMessage();
 
   useEffect(() => {
@@ -44,6 +53,7 @@ const TagManagementDialog: React.FC<TagManagementDialogProps> = ({
   const handleEdit = (tag: TagData) => {
     setEditingTagId(tag.id);
     setEditedLabel(tag.label);
+    setEditedColor(tag.color); // 设置当前标签颜色
   };
 
   const handleSave = async (tag: TagData) => {
@@ -51,7 +61,7 @@ const TagManagementDialog: React.FC<TagManagementDialogProps> = ({
       const result = await window.electronAPI.updateTag({
         id: tag.id,
         label: editedLabel,
-        color: tag.color,
+        color: editedColor, // 使用编辑时修改的颜色
       });
       if (result.success) {
         globalMessage.success("标签更新成功");
@@ -103,16 +113,29 @@ const TagManagementDialog: React.FC<TagManagementDialogProps> = ({
       title: "颜色",
       dataIndex: "color",
       key: "color",
-      render: (color: string) => (
-        <div
-          style={{
-            backgroundColor: color,
-            width: 50,
-            height: 20,
-            borderRadius: 4,
-          }}
-        />
-      ),
+      render: (color: string, record: TagData) => {
+        if (editingTagId === record.id) {
+          return (
+            <ColorPicker
+              value={editedColor}
+              onChange={(newColor) => {
+                const hex = newColor.toHexString();
+                setEditedColor(hex);
+              }}
+            />
+          );
+        }
+        return (
+          <div
+            style={{
+              backgroundColor: color,
+              width: 50,
+              height: 20,
+              borderRadius: 4,
+            }}
+          />
+        );
+      },
     },
     {
       title: "操作",
