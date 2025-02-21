@@ -4,37 +4,7 @@ import * as d3 from "d3";
 import debounce from "lodash/debounce";
 import { radiusScale, fontSizeScale } from "../../../utils/forceSimulation";
 import * as d3DragHandlers from "./d3DragHandlers";
-
-export interface NodeDatum {
-  id: string;
-  tag: any;
-  tagLabels?: any;
-  color: string;
-  usage: number | null;
-  content: any;
-  x?: number;
-  y?: number;
-  fx?: number | null;
-  fy?: number | null;
-}
-
-export interface LinkDatum {
-  source: string | NodeDatum;
-  target: string | NodeDatum;
-  value: number;
-}
-
-export interface GraphData {
-  nodes: NodeDatum[];
-  links: LinkDatum[];
-}
-
-export interface UseD3ForceSimulationParams {
-  containerRef: React.RefObject<HTMLElement>;
-  data: GraphData | null;
-  onNodeContextMenu?: (event: MouseEvent, node: NodeDatum) => void;
-  onNodeClick?: (event: MouseEvent, node: NodeDatum) => void;
-}
+import { NodeDatum, LinkDatum, UseD3ForceSimulationParams } from "./types";
 
 /**
  * 自定义 Hook：在指定容器中初始化 D3 力导向图

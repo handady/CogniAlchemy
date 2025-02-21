@@ -1,5 +1,5 @@
 // src/pages/NodeDetail.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Spin } from "antd";
 import { Excalidraw } from "@excalidraw/excalidraw";
@@ -61,12 +61,13 @@ const NodeDetail: React.FC = () => {
   }, [nodeId]);
 
   // 示例保存函数，结合 Excalidraw API 获取当前场景数据后保存
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (excalidrawAPI) {
       const sceneElements = await excalidrawAPI.getSceneElements();
       const appState = excalidrawAPI.getAppState();
       const files = excalidrawAPI.getFiles();
       const saveData = { elements: sceneElements, appState, files };
+
       try {
         const result = await window.electronAPI.updateNodeDetail(
           nodeId,
@@ -84,7 +85,24 @@ const NodeDetail: React.FC = () => {
     } else {
       console.error("Excalidraw API is not ready yet.");
     }
-  };
+  }, [excalidrawAPI, globalMessage, nodeId]);
+
+  // 监听 Ctrl + S / Cmd + S 事件
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault(); // 阻止默认行为（浏览器另存为）
+        event.stopPropagation(); // 阻止事件冒泡
+        handleSave();
+      }
+    };
+
+    // 绑定事件
+    window.addEventListener("keydown", handleKeyDown, true); // 第三个参数 `true`捕获阶段执行
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [handleSave]);
 
   if (loading) {
     return <Spin />;

@@ -2,11 +2,8 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Toolbar from "../Toolbar";
-import {
-  useD3ForceSimulation,
-  NodeDatum,
-  LinkDatum,
-} from "./hooks/useD3ForceSimulation";
+import { useD3ForceSimulation } from "./hooks/useD3ForceSimulation";
+import { NodeDatum, LinkDatum } from "./hooks/types";
 import { useGlobalMessage } from "@/components/GlobalMessageProvider";
 import NodePannel from "../NodePannel"; // 根据实际路径引入
 
