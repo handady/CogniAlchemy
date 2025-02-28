@@ -4,6 +4,8 @@ import { NodeDatum } from "../Canvas/hooks/types";
 import styles from "./index.module.scss";
 import { useGlobalMessage } from "@/components/GlobalMessageProvider";
 import NewNodeDialog, { NewNode } from "../NewNodeDialog";
+import { Popconfirm } from "antd";
+import ForgingModal from "../ForgingModal";
 
 export interface NodePannelProps {
   x: number;
@@ -24,6 +26,7 @@ const NodePannel: React.FC<NodePannelProps> = ({
 }) => {
   const globalMessage = useGlobalMessage();
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [forgingModalVisible, setForgingModalVisible] = useState(false);
 
   // 关闭 Dialog
   const handleCloseDialog = () => {
@@ -88,6 +91,13 @@ const NodePannel: React.FC<NodePannelProps> = ({
       onClick={(e) => e.stopPropagation()}
       className={`${styles.nodePannel} p-2 gap-1`}
     >
+      {/* 锻造按钮 */}
+      <button
+        className={`${styles.btn} ${styles.forge}`}
+        onClick={() => setForgingModalVisible(true)} // 打开锻造弹框
+      >
+        锻造
+      </button>
       <button
         className={`${styles.btn} ${styles.edit}`}
         onClick={() => {
@@ -115,20 +125,26 @@ const NodePannel: React.FC<NodePannelProps> = ({
       >
         断开
       </button>
-      <button
-        className={`${styles.btn} ${styles.delete}`}
-        onClick={() => {
-          onDeleteNode();
-        }}
+      <Popconfirm
+        title="确定要删除此节点吗？"
+        onConfirm={onDeleteNode}
+        okText="确定"
+        cancelText="取消"
       >
-        删除
-      </button>
+        <button className={`${styles.btn} ${styles.delete}`}>删除</button>
+      </Popconfirm>
       {/* 渲染新增节点 Dialog */}
       <NewNodeDialog
         visible={dialogVisible}
         onCancel={handleCloseDialog}
         onConfirm={handleConfirmDialog}
         node={node as any}
+      />
+      {/* 锻造 Modal 弹框 */}
+      <ForgingModal
+        visible={forgingModalVisible}
+        onCancel={() => setForgingModalVisible(false)}
+        nodeId={(node as any).id} // 传递节点 ID 到 ForgingModal
       />
     </div>
   );

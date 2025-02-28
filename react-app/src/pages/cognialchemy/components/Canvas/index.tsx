@@ -47,6 +47,7 @@ const Canvas: React.FC = () => {
     const res = await window.electronAPI.getGraphData();
     if (res.success) {
       const { nodes: dbNodes, edges: dbEdges } = res.data;
+      console.log("GraphData", res.data);
       setGraphData({
         nodes: dbNodes,
         links: dbEdges.map((edge: any) => ({

@@ -12,6 +12,13 @@
     border-radius: 4px;
   }
 
+  .forge {
+    background-color: rgba($btn-forge, 0.8);
+    &:hover {
+      background-color: rgba($btn-forge-hover, 1);
+    }
+  }
+
   .edit {
     background-color: rgba($btn-close, 1);
     &:hover {

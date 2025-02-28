@@ -26,6 +26,24 @@ contextBridge.exposeInMainWorld("electronAPI", {
   updateNodeDetail: (id, newDetail) =>
     ipcRenderer.invoke("update-node-detail", { id, newDetail }),
   deleteNodeDetail: (id) => ipcRenderer.invoke("delete-node-detail", id),
+  addForgingRecord: (nodeId, forgingContent, createdBy, updatedBy, id) =>
+    ipcRenderer.invoke("add-forging-record", {
+      nodeId,
+      forgingContent,
+      createdBy,
+      updatedBy,
+      id,
+    }),
+  updateForgingRecord: (id, forgingContent, updatedBy) =>
+    ipcRenderer.invoke("update-forging-record", {
+      id,
+      forgingContent,
+      updatedBy,
+    }),
+  getForgingRecord: (id) => ipcRenderer.invoke("get-forging-record", id),
+  getForgingRecordsByNodeId: (nodeId) =>
+    ipcRenderer.invoke("get-forging-records-by-node-id", nodeId),
+  deleteForgingRecord: (id) => ipcRenderer.invoke("delete-forging-record", id),
 });
 
 window.addEventListener("DOMContentLoaded", () => {

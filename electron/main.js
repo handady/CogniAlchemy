@@ -30,6 +30,7 @@ app.whenReady().then(() => {
   require("./ipc-handlers/graphHandlers");
   require("./ipc-handlers/tagHandlers");
   require("./ipc-handlers/nodeDetailsHandlers");
+  require("./ipc-handlers/forgingHanders");
 });
 
 app.on("window-all-closed", () => {

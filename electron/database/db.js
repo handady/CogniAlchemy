@@ -12,11 +12,10 @@ if (!fs.existsSync(dataDir)) {
 const dbPath = path.join(dataDir, "knowledge.db");
 const db = new Database(dbPath);
 
-try{
-
-// 1. 创建 GraphNodes 表，新增 created_by 和 updated_by 字段
-db.prepare(
-  `
+try {
+  // 1. 创建 GraphNodes 表，新增 created_by 和 updated_by 字段
+  db.prepare(
+    `
   CREATE TABLE IF NOT EXISTS GraphNodes (
     id TEXT PRIMARY KEY,
     tag TEXT,
@@ -32,11 +31,11 @@ db.prepare(
     updated_by TEXT       -- 最近操作人
   );
 `
-).run();
+  ).run();
 
-// 2. 创建 Edges 表，新增 created_by 和 updated_by 字段
-db.prepare(
-  `
+  // 2. 创建 Edges 表，新增 created_by 和 updated_by 字段
+  db.prepare(
+    `
   CREATE TABLE IF NOT EXISTS Edges (
     id TEXT PRIMARY KEY,
     source_node_id TEXT,
@@ -50,11 +49,11 @@ db.prepare(
     FOREIGN KEY (target_node_id) REFERENCES GraphNodes(id)
   );
 `
-).run();
+  ).run();
 
-// 3. 创建 InternalCanvasState 表，新增 created_by 和 updated_by 字段
-db.prepare(
-  `
+  // 3. 创建 InternalCanvasState 表，新增 created_by 和 updated_by 字段
+  db.prepare(
+    `
   CREATE TABLE IF NOT EXISTS InternalCanvasState (
     id TEXT PRIMARY KEY,
     parent_node_id TEXT,           -- 对应 GraphNodes 中的节点ID，表示此内部画布属于哪个主节点
@@ -66,11 +65,11 @@ db.prepare(
     FOREIGN KEY (parent_node_id) REFERENCES GraphNodes(id)
   );
 `
-).run();
+  ).run();
 
-// 新建 Tags 表，用于存储所有标签选项
-db.prepare(
-  `
+  // 新建 Tags 表，用于存储所有标签选项
+  db.prepare(
+    `
   CREATE TABLE IF NOT EXISTS Tags (
     id TEXT PRIMARY KEY,
     label TEXT NOT NULL,
@@ -79,10 +78,10 @@ db.prepare(
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 `
-).run();
+  ).run();
 
-// 创建nodeDetails表
-db.exec(`
+  // 创建nodeDetails表
+  db.exec(`
   -- 创建 NodeDetails 表
   CREATE TABLE IF NOT EXISTS NodeDetails (
     id TEXT PRIMARY KEY,
@@ -108,9 +107,31 @@ db.exec(`
     WHERE id = OLD.id;
   END;
 `);
-}catch(e){
+} catch (e) {
   console.log(e);
 }
+
+// 创建 Forging 表
+db.prepare(
+  `
+  CREATE TABLE IF NOT EXISTS Forging (
+    id TEXT PRIMARY KEY,
+    node_id TEXT NOT NULL,
+    forging_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    forging_content TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_by TEXT,
+    FOREIGN KEY (node_id) REFERENCES GraphNodes(id) ON DELETE CASCADE
+  );
+`
+).run();
+
+// 创建索引
+db.prepare(
+  `CREATE INDEX IF NOT EXISTS idx_forging_node_id ON Forging(node_id);`
+).run();
 
 // 导出数据库实例和一些简单的操作函数
 module.exports = db;

@@ -56,6 +56,14 @@ const createInternalCanvasState = (internal) => {
 
 // 获取 Graph 数据
 const getGraphData = () => {
+  const forgingCountStmt = db.prepare(
+    "SELECT node_id, COUNT(*) AS count FROM Forging GROUP BY node_id"
+  );
+  const forgingCounts = forgingCountStmt.all();
+  const forgingCountMap = forgingCounts.reduce((acc, row) => {
+    acc[row.node_id] = row.count;
+    return acc;
+  }, {});
   // 查询所有节点
   const nodesStmt = db.prepare("SELECT * FROM GraphNodes");
   const nodes = nodesStmt.all().map((node) => ({
@@ -84,11 +92,11 @@ const getGraphData = () => {
   // 并生成 tagColors 数组，用于展示标签颜色
   const nodesWithLabels = nodes.map((node) => ({
     ...node,
-    // 使用 tag 数组中每个标签的 id 在 tagMap 中查找对应 label
     tagLabels: node.tag.map((tagId) => tagMap[tagId] || tagId).join(","),
     blendedTagColor: blendColors(
       node.tag.map((tagId) => tagColorMap[tagId] || "#f5347f")
     ),
+    usage: forgingCountMap[node.id] || 0, // 替换 usage 为锻造记录数量
   }));
 
   // 查询所有边

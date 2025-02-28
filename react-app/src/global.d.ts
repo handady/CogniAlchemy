@@ -20,6 +20,17 @@ declare global {
       updateNodeDetail: (nodeId: string, detail: any) => Promise<any>;
       deleteNodeDetail: (nodeId: string) => Promise<any>;
       createNodeDetail: (detail: any) => Promise<any>;
+      addForgingRecord: (
+        nodeId: string,
+        forgingContent: string,
+        createdBy: string,
+        updatedBy: string,
+        id: string
+      ) => Promise<any>;
+      updateForgingRecord: (record: any) => Promise<any>;
+      deleteForgingRecord: (recordId: string) => Promise<any>;
+      getForgingRecord: (recordId: string) => Promise<any>;
+      getForgingRecordsByNodeId: (nodeId: string) => Promise<any>;
     };
   }
 }
