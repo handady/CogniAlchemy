@@ -28,17 +28,20 @@
       "main": "electron/main.js"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "assets/cognialchemy.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     },
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "assets/cognialchemy.ico"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "icon": "assets/cognialchemy.ico"
     }
   },
   "keywords": [],
