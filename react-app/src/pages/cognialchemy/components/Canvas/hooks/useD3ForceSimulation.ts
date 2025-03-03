@@ -241,15 +241,18 @@ export const useD3ForceSimulation = ({
           .style("opacity", 1);
 
         const currentTransform = d3.zoomTransform(svg.node() as SVGSVGElement);
-        const scaleThresholdHalf = 0.95;
-        const scaleThreshold = 1.5;
+        const scaleThresholdHalf = 0.7;
+        const scaleThreshold = 0.95;
         if (currentTransform.k <= scaleThresholdHalf) {
           nodeIdText
             .transition()
             .duration(300)
             .ease(d3.easeCubicOut)
             .style("opacity", 0);
-        } else if (currentTransform.k <= scaleThreshold) {
+        } else if (
+          currentTransform.k <= scaleThreshold &&
+          currentTransform.k > scaleThresholdHalf
+        ) {
           nodeIdText
             .transition()
             .duration(300)
@@ -300,7 +303,7 @@ export const useD3ForceSimulation = ({
       .attr("pointer-events", "none")
       .style("font-size", (d) => `${fontSizeScale(d.usage || 1)}px`)
       .style("user-select", "none")
-      .style("opacity", 0.5);
+      .style("opacity", 1);
 
     // simulation 每次 tick 时更新连线、节点和 id 文本的位置
     simulation.on("tick", () => {
@@ -338,15 +341,18 @@ export const useD3ForceSimulation = ({
         } else {
           zoomContainer.attr("transform", event.transform);
         }
-        const scaleThresholdHalf = 0.95;
-        const scaleThreshold = 1.5;
+        const scaleThresholdHalf = 0.7;
+        const scaleThreshold = 0.95;
         if (event.transform.k > scaleThreshold) {
           nodeIdText
             .transition()
             .duration(300)
             .ease(d3.easeCubicOut)
             .style("opacity", 1);
-        } else if (event.transform.k > scaleThresholdHalf) {
+        } else if (
+          event.transform.k > scaleThresholdHalf &&
+          event.transform.k <= scaleThreshold
+        ) {
           nodeIdText
             .transition()
             .duration(300)
