@@ -33,7 +33,10 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "installerHeaderIcon": "assets/cognialchemy.ico",
+      "installerIcon": "assets/cognialchemy.ico",
+      "shortcutName": "CogniAlchemy"
     },
     "mac": {
       "target": "dmg",
