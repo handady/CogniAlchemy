@@ -11,6 +11,12 @@ import basicShapesJson from "@/assets/LibraryItems/basic-shapes.json";
 import postItJson from "@/assets/LibraryItems/post-it.json";
 import someHanddrawnSignsJson from "@/assets/LibraryItems/some-handdrawn-signs.json";
 import customJson from "@/assets/LibraryItems/custom.json";
+import {
+  uploadFileToCOS,
+  convertBase64ToBlob,
+  getSignedUrl,
+  urlToBase64,
+} from "@/utils/cos";
 
 const libraryItems = [
   ...customJson,
@@ -36,7 +42,7 @@ const NodeDetail: React.FC = () => {
 
   useEffect(() => {
     async function fetchDetail() {
-      const result = await window.electronAPI.getNodeDetail(nodeId as any);
+      const result = await window.electronAPI.getNodeDetail(nodeId);
       if (result.success && result.detail) {
         const detail = result.detail.detail;
         if (detail.appState && detail.appState.collaborators) {
@@ -50,6 +56,22 @@ const NodeDetail: React.FC = () => {
             );
           }
         }
+
+        // 确保 `files` 里面的每个对象都包含 `url`
+        if (detail.files) {
+          for (const fileId in detail.files) {
+            if (detail.files[fileId].dataURL) {
+              // 1. 获取带签名的 URL
+              const signedUrl = await getSignedUrl(
+                detail.files[fileId].id,
+                detail.files[fileId].mimeType
+              );
+              // 2. 转换为 Base64
+              detail.files[fileId].dataURL = await urlToBase64(signedUrl);
+            }
+          }
+        }
+
         setInitialData((prevData: any) => ({
           ...prevData,
           ...detail,
@@ -62,28 +84,65 @@ const NodeDetail: React.FC = () => {
 
   // 示例保存函数，结合 Excalidraw API 获取当前场景数据后保存
   const handleSave = useCallback(async () => {
-    if (excalidrawAPI) {
-      const sceneElements = await excalidrawAPI.getSceneElements();
-      const appState = excalidrawAPI.getAppState();
-      const files = excalidrawAPI.getFiles();
-      const saveData = { elements: sceneElements, appState, files };
-
-      try {
-        const result = await window.electronAPI.updateNodeDetail(
-          nodeId,
-          saveData
-        );
-        if (result.success) {
-          globalMessage.success("保存成功");
-        } else {
-          globalMessage.error(result.message || "保存失败");
-        }
-      } catch (error) {
-        globalMessage.error("保存失败");
-        console.error("保存错误：", error);
-      }
-    } else {
+    if (!excalidrawAPI) {
       console.error("Excalidraw API is not ready yet.");
+      return;
+    }
+
+    const sceneElements = await excalidrawAPI.getSceneElements();
+    const appState = excalidrawAPI.getAppState();
+    const files = excalidrawAPI.getFiles(); // 这里获取所有的图片
+
+    // 1. 处理 Base64 图片上传
+    const uploadedFiles = {} as any;
+    for (const [fileId, fileData] of Object.entries(files)) {
+      if (fileData && (fileData as any).dataURL) {
+        try {
+          const blob = await convertBase64ToBlob(
+            (fileData as any).dataURL,
+            (fileData as any).mimeType
+          );
+          const fileUrl = await uploadFileToCOS(blob, `${fileId}.webp`); // 上传到腾讯云
+          uploadedFiles[fileId] = fileUrl;
+        } catch (error) {
+          console.error("图片上传失败:", error);
+        }
+      }
+    }
+
+    // 2. 替换 `dataURL` 为 URL
+    const updatedFiles = {} as any;
+    for (const [fileId, fileData] of Object.entries(files)) {
+      if (uploadedFiles[fileId]) {
+        updatedFiles[fileId] = {
+          ...(fileData as any),
+          dataURL: uploadedFiles[fileId],
+        };
+      } else {
+        updatedFiles[fileId] = fileData;
+      }
+    }
+
+    // 3. 生成最终保存的数据
+    const saveData = {
+      elements: sceneElements,
+      appState,
+      files: updatedFiles, // 只存 URL
+    };
+
+    try {
+      const result = await window.electronAPI.updateNodeDetail(
+        nodeId,
+        saveData
+      );
+      if (result.success) {
+        globalMessage.success("保存成功");
+      } else {
+        globalMessage.error(result.message || "保存失败");
+      }
+    } catch (error) {
+      globalMessage.error("保存失败");
+      console.error("保存错误：", error);
     }
   }, [excalidrawAPI, globalMessage, nodeId]);
 
