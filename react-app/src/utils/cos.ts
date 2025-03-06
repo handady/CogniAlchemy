@@ -78,17 +78,12 @@ export const uploadFileToCOS = async (fileBlob: Blob, fileName: string) => {
         Headers: {
           "Access-Control-Allow-Origin": "*",
         },
-        onProgress: (progressData) => {
-          console.log("上传进度:", progressData);
-        },
       },
       (err, data) => {
         if (err) {
-          console.error("上传失败", err);
           reject(err);
         } else {
           const fileUrl = `https://${data.Location}`;
-          console.log("上传成功", fileUrl);
           resolve(fileUrl);
         }
       }
