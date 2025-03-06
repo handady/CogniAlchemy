@@ -39,12 +39,19 @@ const NodeDetail: React.FC = () => {
 
   // 用来保存 Excalidraw 的 API 对象
   const [excalidrawAPI, setExcalidrawAPI] = useState<any>(null);
+  // 原始的files数据
+  const [originFiles, setOriginFiles] = useState<any>(null);
 
   useEffect(() => {
     async function fetchDetail() {
       const result = await window.electronAPI.getNodeDetail(nodeId);
       if (result.success && result.detail) {
         const detail = result.detail.detail;
+        if (detail.files) {
+          setOriginFiles(JSON.parse(JSON.stringify(detail.files)));
+        } else {
+          setOriginFiles({});
+        }
         if (detail.appState && detail.appState.collaborators) {
           // 如果 collaborators 是一个对象而不是数组，则转换为数组
           if (
@@ -93,15 +100,19 @@ const NodeDetail: React.FC = () => {
     const appState = excalidrawAPI.getAppState();
     const files = excalidrawAPI.getFiles(); // 这里获取所有的图片
 
-    // 1. 处理 Base64 图片上传
+    // 1. 处理 Base64 图片上传（只上传未上传过的）
     const uploadedFiles = {} as any;
     for (const [fileId, fileData] of Object.entries(files)) {
       if (fileData && (fileData as any).dataURL) {
+        // ✅ 如果 `id` 在 `originFiles` 里已存在，则跳过上传
+        if (originFiles && originFiles[fileId]) {
+          uploadedFiles[fileId] = originFiles[fileId].dataURL;
+          continue;
+        }
+
+        // ✅ `id` 不存在，则进行上传
         try {
-          const blob = await convertBase64ToBlob(
-            (fileData as any).dataURL,
-            (fileData as any).mimeType
-          );
+          const blob = await convertBase64ToBlob((fileData as any).dataURL);
           const fileUrl = await uploadFileToCOS(blob, `${fileId}.webp`); // 上传到腾讯云
           uploadedFiles[fileId] = fileUrl;
         } catch (error) {
@@ -122,6 +133,8 @@ const NodeDetail: React.FC = () => {
         updatedFiles[fileId] = fileData;
       }
     }
+
+    setOriginFiles(updatedFiles);
 
     // 3. 生成最终保存的数据
     const saveData = {
@@ -144,7 +157,7 @@ const NodeDetail: React.FC = () => {
       globalMessage.error("保存失败");
       console.error("保存错误：", error);
     }
-  }, [excalidrawAPI, globalMessage, nodeId]);
+  }, [excalidrawAPI, globalMessage, nodeId, originFiles]);
 
   // 监听 Ctrl + S / Cmd + S 事件
   useEffect(() => {
@@ -164,7 +177,11 @@ const NodeDetail: React.FC = () => {
   }, [handleSave]);
 
   if (loading) {
-    return <Spin />;
+    return (
+      <div className={`w-full h-full flex justify-center items-center`}>
+        <Spin />
+      </div>
+    );
   }
 
   return (
