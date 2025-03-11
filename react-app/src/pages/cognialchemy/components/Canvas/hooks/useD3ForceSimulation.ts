@@ -30,6 +30,8 @@ export const useD3ForceSimulation = ({
     null
   );
   const didInit = useRef(false);
+  let tickCount = 0; // 渲染计数
+  let maxTicks = 100;
 
   useEffect(() => {
     // 如果 data 为空，则不初始化
@@ -46,8 +48,16 @@ export const useD3ForceSimulation = ({
     let cancelled = false;
 
     // 从 props 中获取数据
-    // const { nodes, links } = data;
     const { nodes, links } = data;
+
+    // 设置最大 ticks 数量
+    if (nodes.length < 50) {
+      maxTicks = 30; // 30-50
+    } else if (nodes.length >= 50 && nodes.length < 150) {
+      maxTicks = 50; // 50-100
+    } else {
+      maxTicks = 100; // 100-200
+    }
 
     const tagLinks = [] as any;
     const tagMap = {} as any;
@@ -307,6 +317,8 @@ export const useD3ForceSimulation = ({
 
     // simulation 每次 tick 时更新连线、节点和 id 文本的位置
     simulation.on("tick", () => {
+      tickCount += 1;
+
       link
         .attr("x1", (d) => (d.source as NodeDatum).x!)
         .attr("y1", (d) => (d.source as NodeDatum).y!)
@@ -318,7 +330,33 @@ export const useD3ForceSimulation = ({
       nodeIdText
         .attr("x", (d) => d.x!)
         .attr("y", (d) => d.y! - (radiusScale(d.usage || 1) + 5));
+
+      if (tickCount === maxTicks) {
+        simulation.stop(); // 主动停止simulation
+        locateToLatestNode(); // 调用定位函数
+      }
     });
+
+    // 定位到最新节点函数
+    const locateToLatestNode = () => {
+      const latestNode = nodes.reduce((latest: any, node: any) => {
+        return new Date(node.detail_updated_at) >
+          new Date(latest.detail_updated_at)
+          ? node
+          : latest;
+      }, nodes[0]);
+
+      const x = latestNode.x!;
+      const y = latestNode.y!;
+
+      const transform = d3.zoomIdentity.translate(-x, -y);
+
+      svgRef
+        .current!.transition()
+        .duration(800)
+        .ease(d3.easeCubicOut)
+        .call(zoomBehaviorRef.current!.transform, transform);
+    };
 
     // 5. 设置 zoom 行为
     const zoomBehavior = d3

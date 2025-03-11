@@ -65,7 +65,14 @@ const getGraphData = () => {
     return acc;
   }, {});
   // 查询所有节点
-  const nodesStmt = db.prepare("SELECT * FROM GraphNodes");
+  const nodesStmt = db.prepare(`
+    SELECT 
+      GraphNodes.*, 
+      NodeDetails.updated_at AS detail_updated_at
+    FROM GraphNodes
+    LEFT JOIN NodeDetails ON GraphNodes.id = NodeDetails.node_id
+  `);
+
   const nodes = nodesStmt.all().map((node) => ({
     ...node,
     tag: JSON.parse(node.tag || "[]"),
@@ -97,6 +104,7 @@ const getGraphData = () => {
       node.tag.map((tagId) => tagColorMap[tagId] || "#f5347f")
     ),
     usage: forgingCountMap[node.id] || 0, // 替换 usage 为锻造记录数量
+    detail_updated_at: node.detail_updated_at || null, // 加入此字段
   }));
 
   // 查询所有边
