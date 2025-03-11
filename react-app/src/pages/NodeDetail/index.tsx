@@ -66,17 +66,20 @@ const NodeDetail: React.FC = () => {
 
         // 确保 `files` 里面的每个对象都包含 `url`
         if (detail.files) {
-          for (const fileId in detail.files) {
+          const fileIds = Object.keys(detail.files);
+
+          // 并行处理所有图片
+          const filePromises = fileIds.map(async (fileId) => {
             if (detail.files[fileId].dataURL) {
-              // 1. 获取带签名的 URL
               const signedUrl = await getSignedUrl(
                 detail.files[fileId].id,
                 detail.files[fileId].mimeType
               );
-              // 2. 转换为 Base64
               detail.files[fileId].dataURL = await urlToBase64(signedUrl);
             }
-          }
+          });
+
+          await Promise.all(filePromises); // 等待所有图片转换完成
         }
 
         setInitialData((prevData: any) => ({
