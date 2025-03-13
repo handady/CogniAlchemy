@@ -116,7 +116,10 @@ const NodeDetail: React.FC = () => {
         // ✅ `id` 不存在，则进行上传
         try {
           const blob = await convertBase64ToBlob((fileData as any).dataURL);
-          const fileUrl = await uploadFileToCOS(blob, `${fileId}.webp`); // 上传到腾讯云
+          // 从 `fileData.mimeType` 获取扩展名
+          const mimeType = (fileData as any).mimeType || "image/webp"; // 默认 webp 避免错误
+          const ext = mimeType.split("/")[1]; // 获取后缀，如 `png`、`jpeg`
+          const fileUrl = await uploadFileToCOS(blob, `${fileId}.${ext}`); // 上传到腾讯云
           uploadedFiles[fileId] = fileUrl;
         } catch (error) {
           console.error("图片上传失败:", error);
