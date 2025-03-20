@@ -8,10 +8,19 @@
     <script>
       window.EXCALIDRAW_ASSET_PATH = "assets/excalidraw/";
     </script>
+    <script src="/live2d/pixi-live2d-display/live2dcubismcore.min.js"></script>
+    <script src="/live2d/live2d.min.js"></script>
+    <script src="/live2d/pixi-live2d-display/pixi.min.js"></script>
+    <script src="/live2d/pixi-live2d-display/index.min.js"></script>
   </head>
   <body>
     <div id="root"></div>
+    <canvas
+      id="live2d"
+      style="position: fixed; right: 0; bottom: 0; z-index: 99999"
+    ></canvas>
+    <!-- <script src="/live2d/autoload.js"></script> -->
     <script type="module" src="/src/main.tsx"></script>
-    <script src="/live2d/autoload.js"></script>
+    <script type="module" src="./live2d.js"></script>
   </body>
 </html>

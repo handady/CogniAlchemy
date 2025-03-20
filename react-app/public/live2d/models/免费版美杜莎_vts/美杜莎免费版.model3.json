@@ -1,0 +1,35 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "美杜莎免费版.moc3",
+		"Textures": [
+			"美杜莎免费版.4096/texture_00.png",
+			"美杜莎免费版.4096/texture_01.png"
+		],
+		"Physics": "美杜莎免费版.physics3.json",
+		"DisplayInfo": "美杜莎免费版.cdi3.json",
+		"Expressions": [
+			{
+				"Name": "expression1",
+				"File": "expression1.exp3.json"
+			},
+			{
+				"Name": "expression2",
+				"File": "expression2.exp3.json"
+			}
+		]
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		}
+	],
+	"HitAreas": []
+}

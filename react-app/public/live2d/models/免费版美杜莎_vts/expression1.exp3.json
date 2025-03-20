@@ -1,0 +1,10 @@
+{
+	"Type": "Live2D Expression",
+	"Parameters": [
+		{
+			"Id": "Open_Cheek_Black",
+			"Value": 1,
+			"Blend": "Add"
+		}
+	]
+}
