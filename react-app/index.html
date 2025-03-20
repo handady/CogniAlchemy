@@ -15,12 +15,16 @@
   </head>
   <body>
     <div id="root"></div>
-    <canvas
-      id="live2d"
-      style="position: fixed; right: 0; bottom: 0; z-index: 99999"
-    ></canvas>
-    <!-- <script src="/live2d/autoload.js"></script> -->
+    <div id="waifu">
+      <div id="waifu-tips"></div>
+      <canvas id="live2d" width="800" height="800"></canvas>
+      <div id="waifu-tool"></div>
+    </div>
+
+    <div id="waifu-toggle">
+      <span>看板娘</span>
+    </div>
+    <script src="/live2d/autoload.js"></script>
     <script type="module" src="/src/main.tsx"></script>
-    <script type="module" src="./live2d.js"></script>
   </body>
 </html>
