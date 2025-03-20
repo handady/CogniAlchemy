@@ -8,8 +8,6 @@ import BasicLayout from "@/layouts/basic-layout";
 // 页面
 import CogniAlchemy from "./pages/cognialchemy";
 import NodeDetail from "./pages/NodeDetail";
-// 看板娘
-import Live2D from "./components/Live2D";
 
 const App: React.FC = () => {
   return (
@@ -24,7 +22,6 @@ const App: React.FC = () => {
           </Route>
         </Routes>
       </Router>
-      <Live2D />
     </GlobalMessageProvider>
   );
 };
