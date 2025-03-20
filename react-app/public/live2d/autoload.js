@@ -25,15 +25,20 @@ function loadExternalResource(url, type) {
 
 // 加载 waifu.css live2d.min.js waifu-tips.js
 if (screen.width >= 768) {
-  const canvasWidth = 300;
-  const canvasHeight = 300;
   const app = new PIXI.Application({
     view: document.getElementById("live2d"),
-    width: canvasWidth,
-    height: canvasHeight,
     autoStart: true,
+    antialias: true, // 抗锯齿，减少锯齿感
     transparent: true,
+    resolution: window.devicePixelRatio || 1, // 适配高分辨率屏幕
+    powerPreference: "high-performance", // 提高 GPU 性能
   });
+
+  PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.LINEAR;
+  PIXI.settings.RESOLUTION = window.devicePixelRatio;
+
+  app.ticker.maxFPS = 60;
+  app.ticker.minFPS = 30;
 
   Promise.all([
     loadExternalResource(live2d_path + "waifu.css", "css"),
@@ -46,8 +51,6 @@ if (screen.width >= 768) {
       //apiPath: "https://live2d.fghrsh.net/api/",
       cdnPath: live2d_path,
       app: app,
-      canvasWidth: canvasWidth,
-      canvasHeight: canvasHeight,
       models: [
         {
           name: "Tia",
