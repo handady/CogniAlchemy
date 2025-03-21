@@ -96,9 +96,10 @@
 }
 
 #waifu-tool span {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 30px;
-  text-align: center;
 }
 
 #waifu-tool svg {
@@ -109,7 +110,7 @@
 }
 
 #waifu-tool svg:hover {
-  fill: #0684bd; /* #34495e */
+  fill: #00bfff; /* #34495e */
 }
 
 @keyframes shake {

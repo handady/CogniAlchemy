@@ -32,5 +32,6 @@ declare global {
       getForgingRecord: (recordId: string) => Promise<any>;
       getForgingRecordsByNodeId: (nodeId: string) => Promise<any>;
     };
+    showMessage;
   }
 }
