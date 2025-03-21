@@ -237,6 +237,28 @@ export const useD3ForceSimulation = ({
           .duration(300)
           .ease(d3.easeCubicOut)
           .style("opacity", (nd) => (connectedIds.has(nd.id) ? 1 : 0));
+
+        // ✅ 让 Live2D 看板娘说出节点的内容（使用 window.showMessage）
+        if (window.showMessage && typeof window.showMessage === "function") {
+          if (d.content) {
+            window.showMessage(
+              `这个节点的内容是<span>「${d.content}」</span>哦~`,
+              8000,
+              9
+            );
+          } else {
+            const randomMessages = [
+              "这个节点好像有点神秘呢~ (๑•́ ₃ •̀๑)",
+              "这里没有内容哦，换个地方看看吧！",
+              "我好像不知道这个节点节点？！ Σ( ° △ °|||)︴",
+            ];
+            window.showMessage(
+              randomMessages[Math.floor(Math.random() * randomMessages.length)],
+              8000,
+              9
+            );
+          }
+        }
       })
       .on("mouseout", function () {
         nodeGroup
@@ -251,8 +273,8 @@ export const useD3ForceSimulation = ({
           .style("opacity", 1);
 
         const currentTransform = d3.zoomTransform(svg.node() as SVGSVGElement);
-        const scaleThresholdHalf = 0.7;
-        const scaleThreshold = 0.95;
+        const scaleThresholdHalf = 1.2;
+        const scaleThreshold = 1.6;
         if (currentTransform.k <= scaleThresholdHalf) {
           nodeIdText
             .transition()
@@ -313,7 +335,7 @@ export const useD3ForceSimulation = ({
       .attr("pointer-events", "none")
       .style("font-size", (d) => `${fontSizeScale(d.usage || 1)}px`)
       .style("user-select", "none")
-      .style("opacity", 1);
+      .style("opacity", 0);
 
     // simulation 每次 tick 时更新连线、节点和 id 文本的位置
     simulation.on("tick", () => {
@@ -379,8 +401,8 @@ export const useD3ForceSimulation = ({
         } else {
           zoomContainer.attr("transform", event.transform);
         }
-        const scaleThresholdHalf = 0.7;
-        const scaleThreshold = 0.95;
+        const scaleThresholdHalf = 1.2;
+        const scaleThreshold = 1.6;
         if (event.transform.k > scaleThreshold) {
           nodeIdText
             .transition()
