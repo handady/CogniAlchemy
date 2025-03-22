@@ -1,6 +1,6 @@
 // live2d_path 参数建议使用绝对路径
 // const live2d_path = "https://fastly.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/";
-const live2d_path = "/live2d/";
+const live2d_path = "./live2d/";
 
 // 封装异步加载资源的方法
 function loadExternalResource(url, type) {
@@ -30,15 +30,10 @@ if (screen.width >= 768) {
     autoStart: true,
     antialias: true, // 抗锯齿，减少锯齿感
     transparent: true,
-    resolution: window.devicePixelRatio || 1, // 适配高分辨率屏幕
     powerPreference: "high-performance", // 提高 GPU 性能
   });
 
   PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.LINEAR;
-  PIXI.settings.RESOLUTION = window.devicePixelRatio;
-
-  app.ticker.maxFPS = 60;
-  app.ticker.minFPS = 30;
 
   Promise.all([
     loadExternalResource(live2d_path + "waifu.css", "css"),
